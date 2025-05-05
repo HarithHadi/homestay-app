@@ -1,44 +1,37 @@
-import NextLogo from "./next-logo";
-import SupabaseLogo from "./supabase-logo";
+'use client'
 
-export default function Header() {
+import { Button } from "@/components/ui/button"
+import Image from "next/image"
+
+export default function Hero() {
   return (
-    <div className="flex flex-col gap-16 items-center">
-      <div className="flex gap-8 justify-center items-center">
-        <a
-          href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <SupabaseLogo />
-        </a>
-        <span className="border-l rotate-45 h-6" />
-        <a href="https://nextjs.org/" target="_blank" rel="noreferrer">
-          <NextLogo />
-        </a>
+    <section className="bg-background text-foreground py-20">
+      <div className="container mx-auto px-4 flex flex-col lg:flex-row items-center justify-between gap-10">
+        
+        {/* Text content */}
+        <div className="max-w-xl space-y-6 text-center lg:text-left">
+          <h1 className="text-4xl md:text-5xl font-bold">
+            Find Your Perfect Getaway
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Discover cozy homestays and unique stays tailored for your next trip. Feel at home, anywhere.
+          </p>
+          <Button className="mt-4 px-6 py-3 text-lg">
+            Book Now
+          </Button>
+        </div>
+
+        {/* Image or illustration */}
+        <div className="w-full max-w-md">
+          <Image
+            src="/hero-homestay.jpg" // replace with your actual image
+            alt="Cozy homestay"
+            width={500}
+            height={400}
+            className="rounded-xl shadow-lg object-cover w-full"
+          />
+        </div>
       </div>
-      <h1 className="sr-only">Supabase and Next.js Starter Template</h1>
-      <p className="text-3xl lg:text-4xl !leading-tight mx-auto max-w-xl text-center">
-        The fastest way to build apps with{" "}
-        <a
-          href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-          target="_blank"
-          className="font-bold hover:underline"
-          rel="noreferrer"
-        >
-          Supabase
-        </a>{" "}
-        and{" "}
-        <a
-          href="https://nextjs.org/"
-          target="_blank"
-          className="font-bold hover:underline"
-          rel="noreferrer"
-        >
-          Next.js
-        </a>
-      </p>
-      <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
-    </div>
-  );
+    </section>
+  )
 }
