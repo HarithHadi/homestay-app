@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { createClient } from '@/utils/supabase/client';
+import { redirect } from "next/navigation";
 
 interface Room {
     id: number;
@@ -18,6 +19,20 @@ const RoomsPage = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const supabase = createClient();
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
+
+            if (!user) {
+                redirect("/sign-in");
+            }
+        };
+
+        checkUser();
+    }, [supabase]);
 
     useEffect(() => {
         const fetchRooms = async () => {
@@ -83,7 +98,7 @@ const RoomsPage = () => {
             <h1 className="text-3xl font-bold mb-6 text-center">Available Rooms</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {rooms.map((room) => (
-                    <Card key={room.id} className="shadow-lg transition-transform transform hover:scale-105">
+                    <Card key={room.id} className="bg-background text-foreground shadow-lg transition-transform transform hover:scale-105">
                         <CardHeader>
                             <CardTitle className="text-xl font-semibold">{room.room_name}</CardTitle>
                         </CardHeader>

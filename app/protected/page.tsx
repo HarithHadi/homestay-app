@@ -2,17 +2,8 @@ import FetchDataSteps from "@/components/tutorial/fetch-data-steps";
 import { createClient } from "@/utils/supabase/server";
 import { InfoIcon } from "lucide-react";
 import { redirect } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
 
 
-interface Room {
-    id: number;
-    created_at: string;
-    room_price: number;
-    room_name: string;
-}
 
 export default async function ProtectedPage() {
   const supabase = await createClient();

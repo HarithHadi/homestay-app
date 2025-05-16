@@ -15,7 +15,7 @@ export default async function AuthButton() {
   if (!hasEnvVars) {
     return (
       <>
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-4 items-center ">
           <div>
             <Badge
               variant={"default"}
@@ -30,7 +30,7 @@ export default async function AuthButton() {
               size="sm"
               variant={"outline"}
               disabled
-              className="opacity-75 cursor-none pointer-events-none"
+              className="opacity-75 cursor-none pointer-events-none "
             >
               <Link href="/sign-in">Sign in</Link>
             </Button>
