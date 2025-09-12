@@ -56,6 +56,26 @@ export const signInAction = async (formData: FormData) => {
   return redirect("/");
 };
 
+
+export async function signInWithGoogle(){
+  const supabase = createClient();
+
+  const {data, error} = await (await supabase).auth.signInWithOAuth({
+    provider : "google",
+    options : {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}`,
+    },
+  });
+
+  if(error){
+    throw new Error(error.message);
+  }
+  if (data.url) {
+    // 🔹 force redirect to Google
+    redirect(data.url);
+  }
+}
+
 export const forgotPasswordAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const supabase = await createClient();
