@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { SmtpMessage } from "../smtp-message";
 import { Button } from "@/components/ui/button"; // shadcn/ui button
+import GoogleAuthButton from "@/components/ui/GoogleAuthButton";
 
 export default async function Signup(props: { searchParams: Promise<Message> }) {
   const searchParams = await props.searchParams;
@@ -59,11 +60,7 @@ export default async function Signup(props: { searchParams: Promise<Message> }) 
             </div>
 
             {/* 🔹 Google Sign Up */}
-            <form action={signInWithGoogle}>
-              <Button variant="outline" type="submit" className="w-full">
-                Continue with Google
-              </Button>
-            </form>
+            <GoogleAuthButton></GoogleAuthButton>
           </div>
       <SmtpMessage />
     </>

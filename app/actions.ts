@@ -63,7 +63,7 @@ export async function signInWithGoogle(){
   const {data, error} = await (await supabase).auth.signInWithOAuth({
     provider : "google",
     options : {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}`,
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
     },
   });
 
@@ -74,6 +74,7 @@ export async function signInWithGoogle(){
     // 🔹 force redirect to Google
     redirect(data.url);
   }
+  
 }
 
 export const forgotPasswordAction = async (formData: FormData) => {
