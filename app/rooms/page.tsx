@@ -6,12 +6,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { createClient } from '@/utils/supabase/client';
 import { redirect } from "next/navigation";
-
+import { Button } from '@/components/ui/button';
 interface Room {
     id: number;
     created_at: string;
     room_price: number;
     room_name: string;
+    room_capacity : string;
 }
 
 const RoomsPage = () => {
@@ -104,9 +105,15 @@ const RoomsPage = () => {
                         </CardHeader>
                         <CardContent>
                             <p><strong>Room ID:</strong> {room.id}</p>
-                            <p><strong>Created At:</strong> {new Date(room.created_at).toLocaleString()}</p>
-                            <p><strong>Price:</strong> ${room.room_price.toFixed(2)}</p>
+                            <p><strong>Created At:</strong> {new Date(room.created_at).toLocaleString('en-US', {year: 'numeric',month: '2-digit',day: '2-digit',})}</p>
+                            <p><strong>Capacity:</strong> {room.room_capacity}</p>
+                            <p><strong>Price:</strong> RM{room.room_price.toFixed(2)}</p>
                         </CardContent>
+                        <div className="flex flex-col min-w-64 max-w-64 mx-auto p-4">
+                            <Button 
+                            className='bg-green-600 hover:bg-green-800'> Book now</Button>
+                        </div>
+                        
                     </Card>
                 ))}
             </div>
