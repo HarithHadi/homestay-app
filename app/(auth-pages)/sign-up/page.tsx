@@ -91,7 +91,9 @@ export default async function Signup(props: { searchParams: Promise<Message> }) 
           </div>
           
         </div>
-          <FormMessage message={searchParams} />
+          <div className="pt-4">
+            <FormMessage message={searchParams}  />
+          </div>
       </form>
           
           <div className="flex flex-col min-w-64 max-w-64 mx-auto">
