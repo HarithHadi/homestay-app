@@ -4,6 +4,7 @@ import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import GoogleAuthButton from "@/components/ui/GoogleAuthButton";
+import OtpButton from "@/components/ui/OtpButton";
 
 import Link from "next/link";
 
@@ -52,7 +53,11 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
             </div>
 
             {/* 🔹 Google Sign Up */}
-            <GoogleAuthButton></GoogleAuthButton>
+            <div className="pb-3">
+                <GoogleAuthButton></GoogleAuthButton>
+            </div>
+            
+            <OtpButton></OtpButton>
       </div>
     </>
     

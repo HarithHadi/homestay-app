@@ -7,6 +7,7 @@ import Link from "next/link";
 import { SmtpMessage } from "../smtp-message";
 import { Button } from "@/components/ui/button"; // shadcn/ui button
 import GoogleAuthButton from "@/components/ui/GoogleAuthButton";
+import OtpButton from "@/components/ui/OtpButton";
 
 
 
@@ -105,7 +106,12 @@ export default async function Signup(props: { searchParams: Promise<Message> }) 
             </div>
 
             {/* 🔹 Google Sign Up */}
-            <GoogleAuthButton></GoogleAuthButton>
+            
+            <div className="pb-3">
+                <GoogleAuthButton></GoogleAuthButton>
+            </div>
+            
+            <OtpButton></OtpButton>
           </div>
       <SmtpMessage />
     </>

@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
@@ -65,6 +66,59 @@ export const signInAction = async (formData: FormData) => {
 
   return redirect("/");
 };
+
+export async function signUpwithPhone(formData : FormData){
+  const supabase = await createClient();
+  const phone_number = formData.get("phone_number") as string;
+
+  const {error} = await supabase.auth.signInWithOtp({
+    phone : phone_number
+  })
+
+  if(error) {
+    console.log(error);
+  } else {
+    console.log("OTP sent successfully !")
+    redirect(`/otp-page?phone=${encodeURIComponent(phone_number)}`);
+    
+  }
+}
+
+export async function verifyOTP(formData: FormData) {
+  const supabase = await createClient();
+
+  
+  const phone = formData.get("phone") as string;
+  const token = formData.get("token") as string;
+
+  const { data, error } = await supabase.auth.verifyOtp({
+    phone,
+    token,
+    type: "sms", 
+  });
+
+  if (error) {
+     console.error("Invalid OTP:", error.message);
+     throw new Error("Invalid OTP"); // server action will handle this
+  }
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
+    const { data: profile } = await supabase
+    .from("Profiles")
+    .select("first_name, date_of_birth") // select only what you care about
+    .eq("id", user.id)
+    .single();
+
+    if (!profile || !profile.first_name || !profile.date_of_birth) {
+      return redirect("/complete-profile");
+    }
+  }
+
+  console.log("Login success!", data.session);
+  redirect("/");
+}
 
 
 export async function signInWithGoogle(){

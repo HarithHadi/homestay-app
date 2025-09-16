@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
+import { profile } from "console";
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -12,6 +13,18 @@ export default async function AuthButton() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  let profile = null;
+
+  if(user){
+    const { data } = await supabase
+    .from("Profiles")
+    .select("first_name, surname") // select only what you care about
+    .eq("id", user.id)
+    .single();
+
+    profile = data
+  }
   
 
 
@@ -53,7 +66,7 @@ export default async function AuthButton() {
   }
   return user ? (
     <div className="flex items-center gap-4">
-      Hey, {user.user_metadata.full_name}!
+      Hey, {profile?.first_name} {profile?.surname}!
       <form action={signOutAction}>
         <Button type="submit" variant={"outline"}>
           Sign out
