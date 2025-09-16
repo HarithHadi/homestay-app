@@ -88,12 +88,12 @@ export async function signInWithGoogle(){
 }
 
 export const completeProfile = async (formData: FormData) => {
-  const supabase = await createClient();
+  const supabase = await createClient(); // no await
 
-  const {data: { user }, error : userError,} = await (await supabase).auth.getUser();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    throw new Error ("No authenticated user");
+    throw new Error("No authenticated user");
   }
 
   const first_name = formData.get("first_name")?.toString();
@@ -101,21 +101,31 @@ export const completeProfile = async (formData: FormData) => {
   const dob = formData.get("dob")?.toString();
   const phone_number = formData.get("phone_number")?.toString();
 
-  const {data, error} = await supabase.from('Profiles').insert({
-    id: user.id,
-    first_name,
-    surname,
-    date_of_birth : dob ? new Date(dob).toISOString() : null,
-    phone_number,
-  });
+// console.log("user.id:", user.id);
+// const { data: profiles } = await supabase.from("Profiles").select("id");
+// console.log("all profile ids:", profiles);
 
-  if(error){
+  console.log("Updating user:", user.id);
+  console.log("Update data:", { first_name, surname, dob, phone_number });
+
+  const { data, error } = await supabase
+    .from("Profiles")
+    .update({
+      first_name,
+      surname,
+      date_of_birth: dob ? new Date(dob).toISOString() : null,
+      phone_number,
+    })
+    .eq("id", user.id);
+
+  if (error) {
+    console.log(error);
     throw error;
   }
 
-  console.log("success");
-  redirect("/");
+  redirect("/")
 };
+
 
 export const forgotPasswordAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
