@@ -112,7 +112,7 @@ export async function verifyOTP(formData: FormData) {
     .single();
 
     if (!profile || !profile.first_name || !profile.date_of_birth) {
-      return redirect("/complete-profile");
+      return redirect(`/complete-profile?phone=${encodeURIComponent(phone)}`);
     }
   }
 

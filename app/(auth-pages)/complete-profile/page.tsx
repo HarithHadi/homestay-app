@@ -5,7 +5,13 @@ import { FormMessage, Message } from "@/components/form-message";
 import Link from "next/link";
 import { completeProfile } from "@/app/actions";
 
-export default async function Complete(){
+export default async function Complete({
+  searchParams,
+}: {
+  searchParams: Promise<{ phone?: string }>;
+}){
+
+    const { phone } = await searchParams;
     return (
     <>
       <form className="flex flex-col min-w-64 max-w-70 mx-auto">
@@ -36,7 +42,11 @@ export default async function Complete(){
 
           <div className="">
               <label className="text-sm font-medium">Phone Number</label>
-              <Input name="phone_number" required type="tel" className="w-full" placeholder="6012356789"/>
+              {phone ? 
+                (<Input name="phone_number" required type="tel" className="border border-gray-300 p-2 rounded-md focus:outline-none read-only:bg-gray-100 read-only:text-gray-700" placeholder={phone} value={phone} readOnly/>) 
+              : (<Input name="phone_number" required type="tel" className="w-full" placeholder="6012356789"/>)
+              }
+              
           </div>
 
 
