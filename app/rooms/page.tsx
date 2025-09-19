@@ -133,21 +133,21 @@ const RoomsPage = () => {
                 {rooms.map((room) => (
                 <Card
                     key={room.id}
-                    className="bg-background text-foreground shadow-lg flex overflow-hidden"
+                    className="bg-background text-foreground shadow-lg flex flex-col sm:flex-row overflow-hidden"
                 >
-                    {/* Left side (Image) */}
-                    <div className="w-1/3">
+                    
+                    <div className=" sm:w-1/3">
                     <img
-                        src="/hones.jpg" // replace with your image path
+                        src="/hones.jpg" 
                         alt="Room"
                         className="w-full h-full object-cover"
                     />
                     </div>
 
-                    {/* Right side (Details) */}
-                    <div className="w-2/3 flex flex-col justify-between">
+                    
+                    <div className="sm:w-2/3 flex flex-col justify-between">
                     <CardHeader>
-                        <CardTitle className="text-xl font-semibold">
+                        <CardTitle className="text-xl font-semibold text-center">
                         {room.room_name}
                         </CardTitle>
                     </CardHeader>
