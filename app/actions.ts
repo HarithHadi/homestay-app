@@ -257,3 +257,31 @@ export const signOutAction = async () => {
   await supabase.auth.signOut();
   return redirect("/sign-in");
 };
+
+
+export async function checkAvailability(formData: FormData){
+  const CheckIn = formData.get("check_in")?.toString()
+  const CheckOut = formData.get("check_out")?.toString()
+  const supabase = await createClient();
+
+  const {data, error} = await supabase
+  .from("Booking")
+  .select(`room_id`)
+  .lt('in_date',CheckOut)
+  .gt('out_date',CheckIn);
+
+  const occupied = data
+  if(error){
+    console.error(error.message)
+    return redirect("/rooms?error=availability");
+  }
+  if(!data || data.length === 0){
+    console.log(`all rooms are unoccupied at ${CheckIn} and ${CheckOut}`);
+  }else{
+    console.log(`these rooms are occupied: ${data.map(r => r.room_id).join(",")}`);
+  }
+
+  const roomIds = data.map((row)=> row.room_id).join(",")
+  return redirect(`/rooms?occupied=${roomIds}&check_in=${CheckIn}&check_out=${CheckOut}`)
+  
+}

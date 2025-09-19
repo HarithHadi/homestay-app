@@ -25,6 +25,7 @@ export default async function Signup(props: { searchParams: Promise<Message> }) 
 
   return (
     <>
+    <div className="max-w-7xl flex flex-col items-start mx-auto">
       <form className="flex flex-col min-w-64 max-w-64 mx-auto">
         <h1 className="text-2xl font-medium">Sign up</h1>
         <p className="text-sm text text-foreground">
@@ -113,7 +114,8 @@ export default async function Signup(props: { searchParams: Promise<Message> }) 
             
             <OtpButton></OtpButton>
           </div>
+      </div>
       <SmtpMessage />
-    </>
+    </> 
   );
 }

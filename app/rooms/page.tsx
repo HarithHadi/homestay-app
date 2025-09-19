@@ -7,6 +7,11 @@ import { AlertCircle } from "lucide-react"
 import { createClient } from '@/utils/supabase/client';
 import { redirect } from "next/navigation";
 import { Button } from '@/components/ui/button';
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { SubmitButton } from '@/components/submit-button';
+import { checkAvailability } from '../actions';
+import { useSearchParams } from 'next/navigation';
 interface Room {
     id: number;
     created_at: string;
@@ -17,27 +22,21 @@ interface Room {
 
 const RoomsPage = () => {
     const [rooms, setRooms] = useState<Room[]>([]);
+    const [allRooms, setAllRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const supabase = createClient();
 
-    useEffect(() => {
-        const checkUser = async () => {
-            const {
-                data: { user },
-            } = await supabase.auth.getUser();
-
-            if (!user) {
-                redirect("/sign-in");
-            }
-        };
-
-        checkUser();
-    }, [supabase]);
+    const searchParams = useSearchParams();
+    const occupied = (searchParams.get("occupied")?.split(",") || []).map(Number);
+    const check_in = (searchParams.get("check_in")?.toString());
+    const check_out = (searchParams.get("check_out")?.toString());
+    
 
     useEffect(() => {
         const fetchRooms = async () => {
             try {
+                
                 const { data, error: fetchError } = await supabase
                     .from('Rooms')
                     .select('*');
@@ -46,18 +45,18 @@ const RoomsPage = () => {
                     console.error("Supabase Error:", fetchError);
                     setError(`Failed to fetch rooms: ${fetchError.message}`);
                     setLoading(false);
-                    return; // Stop execution on error
+                    return;
                 }
 
                 if (data) {
-                    console.log("Supabase Data (Rooms):", data);
-                    if (data.length > 0) {
-                        setRooms(data);
-                    }
-                    else{
-                       console.warn("Supabase returned empty array");
-                       setRooms([]);
-                    }
+                        if(occupied && occupied.length>0){
+                            setRooms(data.filter(
+                                (data) => !occupied.includes(data.id)
+                            ));
+                        }else{
+                            setRooms(data);
+                        }
+                        setAllRooms(data);
                 }
                 else {
                     console.warn("Supabase Data (Rooms): data is null or undefined");
@@ -72,7 +71,7 @@ const RoomsPage = () => {
         };
 
         fetchRooms();
-    }, [supabase]);
+    }, [supabase, occupied]);
 
     if (loading) {
         return (
@@ -94,35 +93,98 @@ const RoomsPage = () => {
         );
     }
 
+
     return (
+        <>
+        <div className="container border rounded-xl shadow-md  p-4">
+            <form>
+                <div className="flex flex-col sm:flex-row gap-y-3 sm:gap-x-3">
+                    <div className="flex-1">
+                        <label className="text-sm font-medium">Check in</label>
+                        {check_in ?
+                            (<Input name="check_in" required type="date" className="w-full" defaultValue={check_in} />)
+                        :   (<Input name="check_in" required type="date" className="w-full"/>)
+                        }
+                    </div>
+
+                    <div className="flex-1">
+                        <label className="text-sm font-medium">Check Out</label>
+                        {check_out ?
+                            (<Input name="check_out" required type="date" className="w-full" defaultValue={check_out} />)
+                        :   (<Input name="check_out" required type="date" className="w-full"/>)
+                        }
+                    </div>
+                </div>
+                <div className="flex flex-col justify-end sm:flex-1">
+                    <label className="opacity-0">Search 🔍</label>
+                    <SubmitButton type="submit" formAction={checkAvailability} className="bg-green-500 hover:bg-green-700">
+                        Search 🔍
+                    </SubmitButton>
+                </div>
+            </form>
+        </div>
         <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6 text-center">Available Rooms</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {occupied.length>0 ?
+                (<h1 className="text-3xl font-bold mb-6 text-center">Available Rooms</h1>)
+            :
+                (<h1 className="text-3xl font-bold mb-6 text-center">All Rooms</h1>)
+            }
+            <div className="space-y-6">
                 {rooms.map((room) => (
-                    <Card key={room.id} className="bg-background text-foreground shadow-lg transition-transform transform hover:scale-105">
-                        <CardHeader>
-                            <CardTitle className="text-xl font-semibold">{room.room_name}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p><strong>Room ID:</strong> {room.id}</p>
-                            <p><strong>Created At:</strong> {new Date(room.created_at).toLocaleString('en-US', {year: 'numeric',month: '2-digit',day: '2-digit',})}</p>
-                            <p><strong>Capacity:</strong> {room.room_capacity}</p>
-                            <p><strong>Price:</strong> RM{room.room_price.toFixed(2)}</p>
-                        </CardContent>
-                        <div className="flex flex-col min-w-64 max-w-64 mx-auto p-4">
-                            <Button 
-                            className='bg-green-600 hover:bg-green-800'> Book now</Button>
-                        </div>
-                        
-                    </Card>
+                <Card
+                    key={room.id}
+                    className="bg-background text-foreground shadow-lg flex overflow-hidden"
+                >
+                    {/* Left side (Image) */}
+                    <div className="w-1/3">
+                    <img
+                        src="/hones.jpg" // replace with your image path
+                        alt="Room"
+                        className="w-full h-full object-cover"
+                    />
+                    </div>
+
+                    {/* Right side (Details) */}
+                    <div className="w-2/3 flex flex-col justify-between">
+                    <CardHeader>
+                        <CardTitle className="text-xl font-semibold">
+                        {room.room_name}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p>
+                        <strong>Room ID:</strong> {room.id}
+                        </p>
+                        <p>
+                        <strong>Created At:</strong>{" "}
+                        {new Date(room.created_at).toLocaleString("en-US", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                        })}
+                        </p>
+                        <p>
+                        <strong>Capacity:</strong> {room.room_capacity}
+                        </p>
+                        <p>
+                        <strong>Price:</strong> RM{room.room_price.toFixed(2)}
+                        </p>
+                    </CardContent>
+                    <div className="p-4">
+                        <Button className="bg-green-600 hover:bg-green-800 w-full">
+                        Book now
+                        </Button>
+                    </div>
+                    </div>
+                </Card>
                 ))}
             </div>
+
             {rooms.length === 0 && (
-                <div className="text-center text-gray-500 mt-4">
-                    No rooms found.
-                </div>
+                <div className="text-center text-gray-500 mt-4">No rooms found.</div>
             )}
-        </div>
+            </div>
+        </>
     );
 };
 
