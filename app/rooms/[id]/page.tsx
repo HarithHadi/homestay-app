@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from "@/utils/supabase/server";
 import {
   Carousel,
   CarouselContent,
@@ -8,11 +8,10 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 
-export default async function RoomPage({   params,
-}: {
-  params: { id: string }
-}) {
-  const { id } = params;
+export default async function RoomPage(props: any) {
+  // Cast params to the shape we expect
+  const { id } = (await props.params) as { id: string };
+
   const supabase = await createClient();
 
   const { data: room, error } = await supabase
@@ -25,11 +24,7 @@ export default async function RoomPage({   params,
     return <div className="">Room not found</div>;
   }
 
-  const images = [
-    "/hones.jpg",
-    "/hones.jpg",
-    "/hones.jpg",
-  ];
+  const images = ["/hones.jpg", "/hones.jpg", "/hones.jpg"];
 
   return (
     <div className="container mx-auto p-6 space-y-8">
