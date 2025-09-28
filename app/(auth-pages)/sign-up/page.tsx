@@ -112,7 +112,7 @@ export default async function Signup(props: { searchParams: Promise<Message> }) 
                 <GoogleAuthButton></GoogleAuthButton>
             </div>
             
-            <OtpButton></OtpButton>
+            {/* <OtpButton></OtpButton> */}
           </div>
       </div>
       <SmtpMessage />

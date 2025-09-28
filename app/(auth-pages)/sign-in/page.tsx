@@ -57,7 +57,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
                 <GoogleAuthButton></GoogleAuthButton>
             </div>
             
-            <OtpButton></OtpButton>
+            {/* <OtpButton></OtpButton> */}
       </div>
     </>
     
