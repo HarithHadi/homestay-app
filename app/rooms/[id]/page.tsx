@@ -7,12 +7,22 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 export default async function RoomPage(props: any) {
   // Cast params to the shape we expect
   const { id } = (await props.params) as { id: string };
 
   const supabase = await createClient();
+
+  // 🔒 Check authentication
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/sign-in"); // ⬅️ Kick them to login page
+  }
 
   const { data: room, error } = await supabase
     .from("Rooms")
