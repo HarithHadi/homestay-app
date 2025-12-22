@@ -163,7 +163,7 @@ const RoomsPageClient = () => {
                 >
                 <div className="h-48 w-80 bg-gray-100 flex items-center justify-center overflow-hidden">
                     <img
-                    src= {room.image_url}
+                    src= {room.image_url || ""}
                     alt="Room"
                     className={`w-full h-full ${
                     room.isVertical 
