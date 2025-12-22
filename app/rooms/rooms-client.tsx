@@ -64,6 +64,28 @@ const RoomsPageClient = () => {
     fetchRooms();
   }, [occupied, supabase]);
 
+  const BASE_IMAGE_URL = "/Homestay Pics";
+
+  const roomsImg = rooms.map((room) => {
+    let imageUrl = null;
+    let isVertical = false; // Default is false
+
+    const cleanName = room.room_name.replace(/\s/g, '');
+
+    if([1, 2].includes(room.id)){
+      imageUrl = `/HomestayPic/${cleanName}/${cleanName}Out.jpeg`;
+    }
+    else if([3, 4, 6].includes(room.id)){
+      imageUrl = `/HomestayPic/IndividualHome/IndiOutHome1.jpeg`;
+      isVertical = true;
+    }
+
+    return{
+      ...room, image_url : imageUrl, isVertical
+    };
+
+  })
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -133,17 +155,21 @@ const RoomsPageClient = () => {
           <h1 className="text-3xl font-bold mb-6 text-center">All Rooms</h1>
         )}
         <div className="space-y-6">
-          {rooms.map((room) => (
+          {roomsImg.map((room) => (
             <Link  key={room.id} href={`/rooms/${room.id}`} className="block">
                 <Card
                 key={room.id}
                 className="bg-background text-foreground flex flex-col sm:flex-row overflow-hidden transform transition duration-300 ease-in-out hover:shadow-lg"
                 >
-                <div className="sm:w-1/3">
+                <div className="h-48 w-80 bg-gray-100 flex items-center justify-center overflow-hidden">
                     <img
-                    src="/hones.jpg"
+                    src= {room.image_url}
                     alt="Room"
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full ${
+                    room.isVertical 
+                      ? "object-contain px-10" // Adds spacing/padding for vertical images
+                      : "object-cover"       // Normal behavior for Home 1 & 2
+                    }`}
                     />
                 </div>
 
