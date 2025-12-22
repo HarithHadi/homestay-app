@@ -68,7 +68,7 @@ const RoomsPageClient = () => {
 
   const roomsImg = rooms.map((room) => {
     let imageUrl = null;
-    let isVertical = false; // Default is false
+    let isVertical = false; 
 
     const cleanName = room.room_name.replace(/\s/g, '');
 
@@ -156,24 +156,24 @@ const RoomsPageClient = () => {
         )}
         <div className="space-y-6">
           {roomsImg.map((room) => (
-            <Link  key={room.id} href={`/rooms/${room.id}`} className="block">
+            <Link  key={room.id} href={`/rooms/${room.id}`} className='block'>
                 <Card
                 key={room.id}
                 className="bg-background text-foreground flex flex-col sm:flex-row overflow-hidden transform transition duration-300 ease-in-out hover:shadow-lg"
                 >
-                <div className="h-48 w-80 bg-gray-100 flex items-center justify-center overflow-hidden">
+                <div className="sm:w-2/5 bg-gray-100 flex items-center justify-center overflow-hidden">
                     <img
                     src= {room.image_url || ""}
                     alt="Room"
-                    className={`w-full h-full ${
+                    className={`${ 
                     room.isVertical 
-                      ? "object-contain px-10" // Adds spacing/padding for vertical images
-                      : "object-cover"       // Normal behavior for Home 1 & 2
+                      ? "w-40 h-full object-scale-down " 
+                      : "w-100 h-full object-cover"       
                     }`}
                     />
                 </div>
 
-                <div className="sm:w-2/3 flex flex-col justify-between">
+                <div className="sm:w-3/5 flex flex-col justify-between sm:p-4">
                     <CardHeader>
                     <CardTitle className="text-xl font-semibold text-center">
                         {room.room_name}
