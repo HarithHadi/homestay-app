@@ -1,8 +1,9 @@
-export default function PaymentSuccess ({
-    searchParams : {amount}
+export default async function PaymentSuccess ({
+    searchParams,
 }: {
-    searchParams: {amount: string};
+    searchParams: Promise<{amount?: string}>;
 }){
+    const {amount} = await searchParams
     return (
         <main>
             <div className="">
