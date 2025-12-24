@@ -13,7 +13,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="bg-background text-foreground py-20">
+    <section className="bg-background text-foreground sm:py-20">
       <div className="container mx-auto px-4 flex flex-col lg:flex-row items-center justify-between gap-10">
         
         {/* Text content */}

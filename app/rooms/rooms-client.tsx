@@ -64,7 +64,7 @@ const RoomsPageClient = () => {
     fetchRooms();
   }, [occupied, supabase]);
 
-  const BASE_IMAGE_URL = "/Homestay Pics";
+  const BASE_IMAGE_URL = "/HomestayPic";
 
   const roomsImg = rooms.map((room) => {
     let imageUrl = null;

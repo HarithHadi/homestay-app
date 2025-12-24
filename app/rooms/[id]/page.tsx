@@ -9,6 +9,8 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { roomImages } from "@/lib/roomImage";
+import RoomCarou from "@/components/RoomCarou";
 
 export default async function RoomPage(props: any) {
   // Cast params to the shape we expect
@@ -33,55 +35,16 @@ export default async function RoomPage(props: any) {
     return <div className="">Room not found</div>;
   }
 
-  const images = ["/hones.jpg", "/hones.jpg", "/hones.jpg", "/hones.jpg", "/hones.jpg"];
+  
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <div className="w-full max-w-3xl mx-auto shadow-2xl">
-          <Carousel>
-            <CarouselContent>
-              {images.map((src, idx) => (
-                <CarouselItem key={idx} className="flex justify-center">
-                  <div className="relative w-full h-72 rounded-lg overflow-hidden shadow-md">
-                    <Image
-                      src={src}
-                      alt={`Room image ${idx + 1}`}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </CarouselItem>
-                
-              ))}
-              
-
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext /> 
-            </Carousel>
+    <div className="mx-auto p-6 space-y-8  sm:w-full">
+      <div className=" sm:p-4">
+        <RoomCarou roomId ={room.id}/>
       </div>
+      
 
-      <div className="">
-        {/* Carousel Preview */}
-        <Carousel className="w-full">
-          <CarouselContent className="-ml-2">
-            {images.map((src, idx) => (
-              <CarouselItem key={idx} className="pl-2 basis-1/3">
-                <div className="relative aspect-video rounded-md overflow-hidden border-2 border-gray-200 hover:border-primary transition-all cursor-pointer">
-                  <Image
-                    src={src}
-                    alt={`Room image ${idx + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-      </div>
-
-      <div className="bg-background text-foreground rounded-lg shadow-lg p-6 space-y-4">
+      <div className="bg-background text-foreground rounded-lg shadow-lg p-6 space-y-4  ">
         <h1 className="text-3xl font-bold">{room.room_name}</h1>
         <p className="text-lg text-muted-foreground">{room.description}</p>
 
@@ -99,6 +62,9 @@ export default async function RoomPage(props: any) {
             <p className="text-lg">{room.location}</p>
           </div>
         </div>
+      </div>
+      <div className="">
+        <button className="bg-green-400 p-4 rounded-md text-white">Book Now</button>
       </div>
     </div>
   );
