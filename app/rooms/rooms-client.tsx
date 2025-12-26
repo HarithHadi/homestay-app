@@ -18,6 +18,7 @@ interface Room {
   room_price: number;
   room_name: string;
   room_capacity: string;
+  room_type: string;
 }
 
 const RoomsPageClient = () => {
