@@ -38,7 +38,8 @@ const RoomsPageClient = () => {
       try {
         const { data, error: fetchError } = await supabase
           .from("Rooms")
-          .select("*");
+          .select("*")
+          .order('id', {ascending: true});
 
         if (fetchError) {
           setError(fetchError.message);
