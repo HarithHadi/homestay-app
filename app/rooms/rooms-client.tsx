@@ -181,15 +181,7 @@ const RoomsPageClient = () => {
                     </CardHeader>
                     <CardContent>
                     <p>
-                        <strong>Room ID:</strong> {room.id}
-                    </p>
-                    <p>
-                        <strong>Created At:</strong>{" "}
-                        {new Date(room.created_at).toLocaleString("en-US", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        })}
+                        <strong>House Type:</strong> {room.room_type}
                     </p>
                     <p>
                         <strong>Capacity:</strong> {room.room_capacity}

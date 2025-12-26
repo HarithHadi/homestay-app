@@ -19,11 +19,8 @@ export default function Hero() {
         {/* Text content */}
         <div className="max-w-xl space-y-6 text-center lg:text-left">
           <h1 className="text-4xl md:text-5xl font-bold">
-            Find Your Perfect Getaway 🏠
+            Welcome to Swit60 Homestay 🏠
           </h1>
-          <p className="text-lg text-muted-foreground">
-            Discover cozy homestays and unique stays tailored for your next trip. Feel at home, anywhere.
-          </p>
           <Button className="mt-4 px-6 py-3 text-lg" onClick={handleClick}>
             Book Now
           </Button>
@@ -32,7 +29,7 @@ export default function Hero() {
         {/* Image or illustration */}
         <div className="w-full max-w-md">
           <Image
-            src="/hometay.jpeg"
+            src="/HomestayPic/Home2/Home2Out.jpeg"
             alt="Cozy homestay"
             width={500}
             height={400}

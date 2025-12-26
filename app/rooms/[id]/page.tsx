@@ -46,9 +46,9 @@ export default async function RoomPage(props: any) {
 
       <div className="bg-background text-foreground rounded-lg shadow-lg p-6 space-y-4  ">
         <h1 className="text-3xl font-bold">{room.room_name}</h1>
-        <p className="text-lg text-muted-foreground">{room.description}</p>
+        <p className="text-lg text-muted-foreground">{room.room_description}</p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-4">
           <div className="p-4 bg-secondary rounded-lg shadow-sm">
             <p className="text-sm font-semibold">Capacity</p>
             <p className="text-lg">{room.room_capacity} people</p>
@@ -57,10 +57,15 @@ export default async function RoomPage(props: any) {
             <p className="text-sm font-semibold">Price</p>
             <p className="text-lg">RM {room.room_price}</p>
           </div>
-          <div className="p-4 bg-secondary rounded-lg shadow-sm">
+        </div>
+        <div className="p-4 bg-secondary rounded-lg shadow-sm">
             <p className="text-sm font-semibold">Room Amentities</p>
-            <p className="text-lg">{room.location}</p>
-          </div>
+            <ul>
+              <li className="text-lg">Wifi : {room.facilities.wifi ? '✅' : '❌'}</li>
+              <li className="text-lg">CarPark: {room.facilities.parking ? '✅' : '❌'}</li>
+              <li className="text-lg">BBQ Area: {room.facilities.bbq_area ? '✅' : '❌'}</li>
+            </ul>
+            
         </div>
       </div>
       <div className="">
