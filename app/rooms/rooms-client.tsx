@@ -37,9 +37,9 @@ const RoomsPageClient = () => {
     const fetchRooms = async () => {
       try {
         const { data, error: fetchError } = await supabase
-          .from("Rooms")
+          .from("rooms")
           .select("*")
-          .order('id', {ascending: true});
+          .order('room_id', { ascending: true })
 
         if (fetchError) {
           setError(fetchError.message);
@@ -49,7 +49,7 @@ const RoomsPageClient = () => {
 
         if (data) {
           if (occupied.length > 0) {
-            setRooms(data.filter((room) => !occupied.includes(room.id)));
+            setRooms(data.filter((room) => !occupied.includes(room.room_id)));
           } else {
             setRooms(data);
           }
@@ -74,10 +74,10 @@ const RoomsPageClient = () => {
 
     const cleanName = room.room_name.replace(/\s/g, '');
 
-    if([1, 2].includes(room.id)){
+    if([1, 2].includes(room.room_id)){
       imageUrl = `/HomestayPic/${cleanName}/${cleanName}Out.jpeg`;
     }
-    else if([3, 4, 6].includes(room.id)){
+    else if([3, 4, 6].includes(room.room_id)){
       imageUrl = `/HomestayPic/IndividualHome/IndiOutHome1.jpeg`;
       isVertical = true;
     }
@@ -158,23 +158,30 @@ const RoomsPageClient = () => {
         )}
         <div className="space-y-6">
           {roomsImg.map((room) => (
-            <Link  key={room.id} href={`/rooms/${room.id}`} className='block'>
+            <Link  key={room.room_id} href={`/rooms/${room.room_id}`} className='block'>
                 <Card
-                key={room.id}
+                key={room.room_id}
                 className="bg-background text-foreground flex flex-col sm:flex-row overflow-hidden transform transition duration-300 ease-in-out hover:shadow-lg"
                 >
-                <div className="sm:w-2/5 bg-gray-100 flex items-center justify-center overflow-hidden">
-                    <img
-                    src= {room.image_url || ""}
-                    alt="Room"
-                    className={`${ 
-                    room.isVertical 
-                      ? "w-40 h-full object-scale-down " 
-                      : "w-100 h-full object-cover"       
-                    }`}
-                    />
+                <div className="sm:w-2/5 bg-gray-100 flex items-center justify-center overflow-hidden min-h-[200px] sm:min-h-[250px]">
+                  {/* If the image URL exists, try to load it. Otherwise, you can rely on the gray background! */}
+                  {room.image_url ? (
+                      <img
+                          src={"/HomestayPic/Home1/Home1Out.jpeg"} // <-- Now using your dynamic URL!
+                          alt={room.room_name} // <-- Better accessibility than just "Room"
+                          className={`${ 
+                              room.isVertical 
+                              ? "w-40 h-full object-scale-down" 
+                              : "w-full h-full object-cover"       
+                          }`}
+                          // Optional: If the image path is broken, hide the broken image icon so it just shows the neat gray box
+                          onError={(e) => (e.currentTarget.style.display = 'none')}
+                      />
+                  ) : (
+                      // Optional fallback text or icon if there is no image assigned
+                      <span className="text-gray-400 text-sm">No Image</span>
+                  )}
                 </div>
-
                 <div className="sm:w-3/5 flex flex-col justify-between sm:p-4">
                     <CardHeader>
                     <CardTitle className="text-xl font-semibold text-center">

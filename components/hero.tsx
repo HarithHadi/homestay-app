@@ -2,13 +2,11 @@
 
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { redirect, useRouter } from "next/navigation";
-
-
+import { useRouter } from "next/navigation";
 
 export default function Hero() {
   const router = useRouter();
-  const handleClick = () =>{
+  const handleClick = () => {
     router.push("/rooms");
   };
 
@@ -16,8 +14,8 @@ export default function Hero() {
     <section className="bg-background text-foreground sm:py-20">
       <div className="container mx-auto px-4 flex flex-col lg:flex-row items-center justify-between gap-10">
         
-        {/* Text content */}
-        <div className="max-w-xl space-y-6 text-center lg:text-left">
+        
+        <div className="max-w-xl space-y-6 text-center lg:text-left order-2 lg:order-1">
           <h1 className="text-4xl md:text-5xl font-bold">
             Welcome to Swit60 Homestay 🏠
           </h1>
@@ -26,8 +24,8 @@ export default function Hero() {
           </Button>
         </div>
 
-        {/* Image or illustration */}
-        <div className="w-full max-w-md">
+        
+        <div className="w-full max-w-md order-1 lg:order-2">
           <Image
             src="/HomestayPic/Home2/Home2Out.jpeg"
             alt="Cozy homestay"

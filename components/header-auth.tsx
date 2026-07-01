@@ -18,8 +18,8 @@ export default async function AuthButton() {
 
   if(user){
     const { data } = await supabase
-    .from("Profiles")
-    .select("first_name, surname") // select only what you care about
+    .from("profiles")
+    .select("first_name, surname") 
     .eq("id", user.id)
     .single();
 

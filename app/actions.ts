@@ -106,7 +106,7 @@ export async function verifyOTP(formData: FormData) {
 
   if (user) {
     const { data: profile } = await supabase
-    .from("Profiles")
+    .from("profiles")
     .select("first_name, date_of_birth") // select only what you care about
     .eq("id", user.id)
     .single();
@@ -163,8 +163,9 @@ export const completeProfile = async (formData: FormData) => {
   console.log("Update data:", { first_name, surname, dob, phone_number });
 
   const { data, error } = await supabase
-    .from("Profiles")
-    .update({
+    .from("profiles")
+    .upsert({
+      id: user.id,
       first_name,
       surname,
       date_of_birth: dob ? new Date(dob).toISOString() : null,

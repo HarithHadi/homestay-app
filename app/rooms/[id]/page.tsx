@@ -26,9 +26,9 @@ export default async function RoomPage(props: any) {
 
 
   const { data: room, error } = await supabase
-    .from("Rooms")
+    .from("rooms")
     .select("*")
-    .eq("id", id)
+    .eq("room_id", id)
     .single();
 
   if (error || !room) {
