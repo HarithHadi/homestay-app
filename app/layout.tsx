@@ -9,6 +9,7 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css"; // Import your global CSS
+import FloatingNavbar from "@/components/floating-navbar";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -33,23 +34,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen flex flex-col items-center">
+          <main className="flex flex-col items-center">
             <div className="flex-1 w-full flex flex-col items-center">
-              <nav className=" w-full flex justify-center border-b border-b-foreground/10 h-16">
-                
-                <div className=" w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-                  <Link href={"/"}>
-                    <h1 className="text-3xl md:text-4xl font-bold text-orange-400">Swit60</h1>
-                  </Link>
-                  <div className="flex gap-5 items-center font-semibold">
-                  </div>
-                  
-                  {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
-                </div>
-              </nav>
-              <div className="flex flex-col max-w-5xl p-5">
+              <FloatingNavbar />
                 {children}
-              </div>
             </div>
           </main>
         </ThemeProvider>
