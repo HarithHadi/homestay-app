@@ -19,7 +19,7 @@ export default function Herotoo() {
 
     return(
         <section className="w-full text-foreground min-h-screen flex items-center py-12 sm:py-20 bg-[#FDF4AF]">
-            <div className="bg-green-500 rounded-3xl max-w-4xl mx-auto px-6 py-12 flex flex-col lg:flex-row  items-center justify-center lg:justify-between gap-10 relative border border-black">
+            <div className="bg-green-500 rounded-3xl max-w-4xl mx-auto px-6 py-12 flex flex-col lg:flex-row  items-center justify-center lg:justify-between gap-10 relative border">
                 <div className="space-y-10">
                     <h1 className={`${fraunces.className} text-4xl md:text-5xl font-extrabold`}>Swit60 Homestay</h1>
                     <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Fugiat libero excepturi numquam.</p>
@@ -41,6 +41,28 @@ export default function Herotoo() {
                 />
                 
             </div>
+                <Image
+                    src="/HeroAssets/Arrow1.svg"
+                    alt= "Star image"
+                    width={500}
+                    height={100}
+                    className="absolute -top-6 -left-6 rotate-12 z-10"
+                />
+                <Image
+                    src="/HeroAssets/Arrow2.svg"
+                    alt= "Star image"
+                    width={500}
+                    height={100}
+                    className="absolute -bottom-6 -left-6 rotate-22 z-10"
+                />
+                <Image
+                    src="/HeroAssets/Arrow3.svg"
+                    alt= "Star image"
+                    width={500}
+                    height={100}
+                    className="absolute -bottom-6 -right-6 rotate-45 z-10"
+                />
+                
             
         </section>
     )

@@ -12,7 +12,7 @@ const navLinks = [
 export default function FloatingNavbar() {
   return (
     <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
-      <nav className="w-full max-w-4xl flex items-center justify-between gap-6 rounded-full border border-black bg-white  px-6 py-3">
+      <nav className="w-full max-w-4xl flex items-center justify-between gap-6 rounded-full border bg-white  px-6 py-3">
         
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
