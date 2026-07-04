@@ -26,7 +26,7 @@ export default function MobileNav({ authSlot }: { authSlot: React.ReactNode }) {
 
       {/* Dropdown panel */}
       {isOpen && (
-        <div className="fixed top-16 left-0 right-0 bg-orange-400 shadow-xl border-t border-black/10 flex flex-col items-stretch py-4 z-50">
+        <div className="fixed top-16 left-0 right-0 bg-[#FDF4AF] shadow-md border-t border-black/10 flex flex-col items-stretch py-4 z-50">
           {navLinks.map((link) => (
             <Link
               key={link.href}
