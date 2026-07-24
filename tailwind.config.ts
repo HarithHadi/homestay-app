@@ -14,6 +14,12 @@ module.exports = {
         cardForeground: "var(--card-foreground)",
         popover: "var(--popover)",
         popoverForeground: "var(--popover-foreground)",
+        'brand-orange': 'oklch(0.75 0.15 55)',
+        'brand-orange-hover': 'oklch(0.8 0.14 55)',
+        'brand-navy': 'oklch(0.2 0.03 260)',
+        'brand-yellow': '#FDF4AF',
+        'brand-black': '#323130',
+        
         primary: {
           DEFAULT: "var(--primary)",
           foreground: "var(--primary-foreground)",
@@ -58,6 +64,8 @@ module.exports = {
       borderRadius: {
         radius: "var(--radius)",
       },
+
+      
     },
   },
   plugins: [],

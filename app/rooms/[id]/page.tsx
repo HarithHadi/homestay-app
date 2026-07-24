@@ -40,11 +40,11 @@ export default async function RoomPage(props: any) {
   return (
     <div className="mx-auto p-6 space-y-8  sm:w-full">
       <div className=" sm:p-4">
-        <RoomCarou roomId ={room.id}/>
+        <RoomCarou roomId ={room.room_id}/>
       </div>
       
 
-      <div className="bg-background text-foreground rounded-lg shadow-lg p-6 space-y-4  ">
+      <div className="bg-background text-foreground rounded-lg p-6 space-y-4 border border-black ">
         <h1 className="text-3xl font-bold">{room.room_name}</h1>
         <p className="text-lg text-muted-foreground">{room.room_description}</p>
 

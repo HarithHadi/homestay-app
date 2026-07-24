@@ -138,7 +138,11 @@ const RoomsPageClient = () => {
     );
   }
 
+
+
   return (
+
+    
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold mb-8 text-center text-foreground">
@@ -146,10 +150,10 @@ const RoomsPageClient = () => {
         </h1>
 
         {/* Search bar */}
-        <Card className="mb-8 bg-transparent border-b border-black">
+        <Card className="mb-8 bg-brand-black ">
           <CardContent className="p-4">
             <div className="flex flex-col sm:flex-row gap-4 sm:items-end">
-              <div className="flex-1">
+              <div className="flex-1 text-white">
                 <Label htmlFor="check-in" className="mb-1 block font-semibold">
                   Check-In Date
                 </Label>
@@ -158,10 +162,10 @@ const RoomsPageClient = () => {
                   type="date"
                   value={checkIn}
                   onChange={(e) => setCheckIn(e.target.value)}
-                  className="border border-black"
+                  className="border border-black text-black"
                 />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 text-white">
                 <Label htmlFor="check-out" className="mb-1 block font-semibold">
                   Check-Out Date
                 </Label>
@@ -171,7 +175,7 @@ const RoomsPageClient = () => {
                   value={checkOut}
                   min={checkIn || undefined}
                   onChange={(e) => setCheckOut(e.target.value)}
-                  className="border border-black"
+                  className="border border-black text-black"
                 />
               </div>
               <div className="flex gap-2">
@@ -208,10 +212,12 @@ const RoomsPageClient = () => {
               : "No rooms found."}
           </p>
         ) : (
+
+          // -------------------------------------------Rooms-------------------------------------------
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {roomsWithImages.map((room) => (
               <Link key={room.room_id} href={`/rooms/${room.room_id}`} className="block">
-                <Card className="flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-lg">
+                <Card className="flex flex-col h-full border border-brand-orange overflow-hidden transition-shadow duration-300 hover:border-4 rounded-md bg-brand-black text-white">
                   <div className="w-full h-56 bg-muted flex items-center justify-center overflow-hidden">
                     {room.image_url ? (
                       <img

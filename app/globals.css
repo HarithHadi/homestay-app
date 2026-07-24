@@ -45,7 +45,7 @@
     
     .dark {
       --background: oklch(0.27 0.0188 258.37);
-      --foreground: oklch(0.36 0.0154 259.81)
+      --foreground: oklch(0.36 0.0154 259.81);
       --card: oklch(0.21 0.034 264.665);
       --card-foreground: oklch(0.985 0.002 247.839);
       --popover: oklch(0.21 0.034 264.665);
@@ -79,6 +79,14 @@
     
   }
 
+  @theme inline {
+    --color-brand-yellow: var(--brand-yellow);
+    --color-brand-orange: var(--brand-orange);
+    --color-brand-orange-hover: var(--brand-orange-hover);
+    --color-brand-navy: var(--brand-navy);
+    --color-brand-black: #323130;
+  }
+
   @layer base {
     * {
       @apply border-border;
@@ -89,14 +97,9 @@
   }
 
   @layer utilities {
-  .test {
-    @apply border border-red-500;
+    .test {
+      @apply border border-red-500;
+    }
   }
+  
 
-
-@theme inline {
-  --color-brand-yellow: var(--brand-yellow);
-  --color-brand-orange: var(--brand-orange);
-  --color-brand-orange-hover: var(--brand-orange-hover);
-  --color-brand-navy: var(--brand-navy);
-}}
