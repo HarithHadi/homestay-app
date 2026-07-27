@@ -54,7 +54,7 @@ export default function Herotoo() {
                 {/* Right Column: Natural Flow */}
                 <div className="hidden lg:flex h-full w-full items-center justify-center">
                     <Image
-                        src="/HeroAssets/patrick.svg"
+                        src="/HeroAssets/Patrick.svg"
                         alt="Patrick"
                         width={320}
                         height={320}
