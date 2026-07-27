@@ -28,7 +28,7 @@ export default function Herotoo() {
         }}
         />
         <Image
-            src="/HeroAssets/patrick.svg"
+            src="/HeroAssets/Patrick.svg"
             alt="Patrick"
             width={90}
             height={90}
