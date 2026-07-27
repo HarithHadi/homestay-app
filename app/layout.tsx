@@ -12,6 +12,7 @@ import "./globals.css"; // Import your global CSS
 import FloatingNavbar from "@/components/floating-navbar";
 import Navbar from "@/components/navbar";
 
+
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";

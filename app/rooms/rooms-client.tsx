@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, Search } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
+import { roomImages } from "@/lib/roomImage";
 
 interface Room {
   room_id: number;
@@ -101,20 +102,13 @@ const RoomsPageClient = () => {
 
   {/* Images */}
   const attachImages = (roomList: Room[]) =>
-    roomList.map((room) => {
-      const cleanName = room.room_name.replace(/\s/g, "");
-      let imageUrl = null;
-      let isVertical = false;
+  roomList.map((room) => {
+    const images = roomImages[room.room_id];
+    const imageUrl = images?.[0] ?? null; // first image = "Out" / cover shot
+    const isVertical = room.room_id !== 1 && room.room_id !== 2; // Home1/Home2 are landscape, IndividualHome shots are vertical
 
-      if ([1, 2].includes(room.room_id)) {
-        imageUrl = `/HomestayPic/${cleanName}/${cleanName}Out.jpeg`;
-      } else if ([3, 4, 6].includes(room.room_id)) {
-        imageUrl = `/HomestayPic/Home1/Home1Out.jpeg`;
-        isVertical = true;
-      }
-
-      return { ...room, image_url: imageUrl, isVertical };
-    });
+    return { ...room, image_url: imageUrl, isVertical };
+  });
 
   const roomsWithImages = attachImages(filteredRooms ?? rooms);
 

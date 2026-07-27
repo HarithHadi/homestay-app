@@ -27,6 +27,13 @@ export const roomImages: Record<number, string[]> = {
     "/HomestayPic/IndividualHome/IndInHome3.jpeg",
     "/HomestayPic/IndividualHome/IndInHome4.jpeg",
   ],
+  5: [
+    "/HomestayPic/IndividualHome/IndiOutHome1.jpeg",
+    "/HomestayPic/IndividualHome/IndInHome1.jpeg",
+    "/HomestayPic/IndividualHome/IndInHome2.jpeg",
+    "/HomestayPic/IndividualHome/IndInHome3.jpeg",
+    "/HomestayPic/IndividualHome/IndInHome4.jpeg",
+  ],
   6: [
     "/HomestayPic/IndividualHome/IndiOutHome1.jpeg",
     "/HomestayPic/IndividualHome/IndInHome1.jpeg",

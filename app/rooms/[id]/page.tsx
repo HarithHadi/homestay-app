@@ -1,16 +1,9 @@
 import { createClient } from "@/utils/supabase/server";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
-import { redirect } from "next/navigation";
-import { roomImages } from "@/lib/roomImage";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import RoomCarou from "@/components/RoomCarou";
+import { Calendar } from "lucide-react";
+import { fraunces } from "@/lib/font";
 
 export default async function RoomPage(props: any) {
   // Cast params to the shape we expect
@@ -23,8 +16,6 @@ export default async function RoomPage(props: any) {
     data: { user },
   } = await supabase.auth.getUser();
 
-
-
   const { data: room, error } = await supabase
     .from("rooms")
     .select("*")
@@ -32,44 +23,68 @@ export default async function RoomPage(props: any) {
     .single();
 
   if (error || !room) {
-    return <div className="">Room not found</div>;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-foreground">Room not found</p>
+      </div>
+    );
   }
 
-  
-
   return (
-    <div className="mx-auto p-6 space-y-8  sm:w-full">
-      <div className=" sm:p-4">
-        <RoomCarou roomId ={room.room_id}/>
-      </div>
-      
-
-      <div className="bg-background text-foreground rounded-lg p-6 space-y-4 border border-black ">
-        <h1 className="text-3xl font-bold">{room.room_name}</h1>
-        <p className="text-lg text-muted-foreground">{room.room_description}</p>
-
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-4">
-          <div className="p-4 bg-secondary rounded-lg shadow-sm">
-            <p className="text-sm font-semibold">Capacity</p>
-            <p className="text-lg">{room.room_capacity} people</p>
-          </div>
-          <div className="p-4 bg-secondary rounded-lg shadow-sm">
-            <p className="text-sm font-semibold">Price</p>
-            <p className="text-lg">RM {room.room_price}</p>
-          </div>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-6 py-12 space-y-5">
+        <div>
+          <RoomCarou roomId={room.room_id} />
         </div>
-        <div className="p-4 bg-secondary rounded-lg shadow-sm">
-            <p className="text-sm font-semibold">Room Amentities</p>
-            <ul>
-              <li className="text-lg">Wifi : {room.facilities.wifi ? '✅' : '❌'}</li>
-              <li className="text-lg">CarPark: {room.facilities.parking ? '✅' : '❌'}</li>
-              <li className="text-lg">BBQ Area: {room.facilities.bbq_area ? '✅' : '❌'}</li>
-            </ul>
+
+        <Card className="border border-brand-orange rounded-md bg-brand-black text-white">
+          <CardHeader>
+            <CardTitle className={`${fraunces.className} text-3xl font-bold text-brand-orange justify-center`}>
+              {room.room_name}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              {room.room_description}
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-brand-black">
+              <div className="p-4 bg-secondary rounded-lg shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Capacity
+                </p>
+                <p className="text-2xl font-bold mt-1">{room.room_capacity} people</p>
+              </div>
+              <div className="p-4 bg-secondary rounded-lg shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Price
+                </p>
+                <p className="text-2xl font-bold mt-1">RM {room.room_price}</p>
+              </div>
+            </div>
+
+            <div className="p-4 bg-secondary rounded-lg shadow-sm text-brand-black">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                Room Amenities
+              </p>
+              <ul className="space-y-1.5">
+                <li className="text-base">Wifi: {room.facilities.wifi ? "✅" : "❌"}</li>
+                <li className="text-base">CarPark: {room.facilities.parking ? "✅" : "❌"}</li>
+                <li className="text-base">BBQ Area: {room.facilities.bbq_area ? "✅" : "❌"}</li>
+              </ul>
+            </div>
+
+            <Button className="bg-orange-500 w-full py-6 text-lg font-semibold rounded-md hover:bg-orange-600 transition-colors group flex items-center justify-center gap-2">
+              <Calendar className="h-5 w-5 group-hover:rotate-12 transition-transform" />
+              Book Now
+            </Button>
+          </CardContent>
+
             
-        </div>
-      </div>
-      <div className="">
-        <button className="bg-green-400 p-4 rounded-md text-white">Book Now</button>
+
+        </Card>
+
+        
       </div>
     </div>
   );
