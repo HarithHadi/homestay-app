@@ -2,8 +2,11 @@
 
 import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
-import { headers } from "next/headers";
+import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
+import { validateReceipt } from "@/lib/validateReceipt";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 
 export const signUpAction = async (formData: FormData) => {
@@ -266,7 +269,7 @@ export async function checkAvailability(formData: FormData){
   const supabase = await createClient();
 
   const {data, error} = await supabase
-  .from("Booking")
+  .from("booking")
   .select(`room_id`)
   .lt('in_date',CheckOut)
   .gt('out_date',CheckIn);
@@ -285,4 +288,112 @@ export async function checkAvailability(formData: FormData){
   const roomIds = data.map((row)=> row.room_id).join(",")
   return redirect(`/rooms?occupied=${roomIds}&check_in=${CheckIn}&check_out=${CheckOut}`)
   
+}
+
+
+// ---------- Guest QR payment (cookie-identified, no account) ----------
+const BOOKING_COOKIE = "booking_token";
+
+export async function createBooking(formData: FormData) {
+  const roomId = Number(formData.get("room_id"));
+  const checkIn = formData.get("check_in")?.toString() ?? "";
+  const checkOut = formData.get("check_out")?.toString() ?? "";
+  const guest_name = formData.get("guest_name")?.toString().trim() ?? "";
+  const guest_phone = formData.get("guest_phone")?.toString().trim() ?? "";
+  const guest_email = formData.get("guest_email")?.toString().trim() ?? "";
+
+  const back = (error: string): never =>
+    redirect(
+      `/Payment?${new URLSearchParams({ room_id: String(roomId), check_in: checkIn, check_out: checkOut, error })}`
+    );
+
+  if (!roomId || !guest_name || !guest_phone || !guest_email) {
+    return back("Please fill in all fields.");
+  }
+  const nights = Math.round((Date.parse(checkOut) - Date.parse(checkIn)) / 86_400_000);
+  if (!(nights > 0)) return back("Check-out must be after check-in.");
+  if (checkIn < new Date().toISOString().slice(0, 10)) return back("Check-in can't be in the past.");
+
+  const db = createAdminClient();
+
+  // Price comes from the DB, never from the client.
+  const { data: room } = await db.from("rooms").select("room_price").eq("room_id", roomId).single();
+  if (!room) return back("Room not found.");
+
+  const { data: clash } = await db
+    .from("booking")
+    .select("room_id")
+    .eq("room_id", roomId)
+    .lt("in_date", checkOut)
+    .gt("out_date", checkIn)
+    .neq("BookingStatus", "CANCELLED")
+    .limit(1);
+  if (clash?.length) return back("Sorry, that room was just booked for those dates.");
+
+  const { data: booking, error } = await db
+    .from("booking")
+    .insert({
+      room_id: roomId,
+      in_date: checkIn,
+      out_date: checkOut,
+      BookingStatus: "PENDING",
+      guest_name,
+      guest_phone,
+      guest_email,
+      total_amount: nights * room.room_price,
+    })
+    .select("access_token")
+    .single();
+  if (error || !booking) {
+    console.error(error?.message);
+    return back("Could not create your booking. Please try again.");
+  }
+
+  (await cookies()).set(BOOKING_COOKIE, booking.access_token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+  });
+  redirect("/Payment");
+}
+
+export async function saveReceipt(formData: FormData) {
+  const token = (await cookies()).get(BOOKING_COOKIE)?.value;
+  const file = formData.get("receipt");
+  if (!token || !(file instanceof File) || file.size === 0) {
+    return encodedRedirect("error", "/Payment", "Please choose your receipt file.");
+  }
+
+  const invalid = validateReceipt(file);
+  if (invalid) return encodedRedirect("error", "/Payment", invalid);
+
+  const db = createAdminClient();
+  const path = `${token}.${file.type.split("/")[1]}`; // extension from the validated MIME type, not the filename
+  const { error } = await db.storage
+    .from("receipts")
+    .upload(path, file, { upsert: true, contentType: file.type });
+  if (error) {
+    console.error(error.message);
+    return encodedRedirect("error", "/Payment", "Upload failed. Please try again.");
+  }
+
+  await db
+    .from("booking")
+    .update({ receipt_url: path })
+    .eq("access_token", token)
+    .eq("BookingStatus", "PENDING");
+  redirect("/Payment");
+}
+
+export async function setBookingStatus(formData: FormData) {
+  if (!(await isAdmin())) return redirect("/");
+
+  const token = formData.get("token")?.toString();
+  const status = formData.get("status")?.toString();
+  if (!token || (status !== "CONFIRMED" && status !== "CANCELLED")) return;
+
+  await createAdminClient().from("booking").update({ BookingStatus: status }).eq("access_token", token);
+  revalidatePath("/admin/bookings");
 }

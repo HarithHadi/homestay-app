@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import RoomCarou from "@/components/RoomCarou";
 import { Calendar } from "lucide-react";
 import { fraunces } from "@/lib/font";
@@ -8,6 +8,11 @@ import { fraunces } from "@/lib/font";
 export default async function RoomPage(props: any) {
   // Cast params to the shape we expect
   const { id } = (await props.params) as { id: string };
+  // dates carried over from the rooms search, forwarded to /Payment
+  const { check_in, check_out } = (await props.searchParams) as { check_in?: string; check_out?: string };
+  const dates: Record<string, string> = {};
+  if (check_in) dates.check_in = check_in;
+  if (check_out) dates.check_out = check_out;
 
   const supabase = await createClient();
 
@@ -74,10 +79,13 @@ export default async function RoomPage(props: any) {
               </ul>
             </div>
 
-            <Button className="bg-orange-500 w-full py-6 text-lg font-semibold rounded-md hover:bg-orange-600 transition-colors group flex items-center justify-center gap-2">
+            <Link
+              href={`/Payment?${new URLSearchParams({ room_id: id, ...dates })}`}
+              className="bg-orange-500 w-full py-6 text-lg font-semibold rounded-md hover:bg-orange-600 transition-colors group flex items-center justify-center gap-2"
+            >
               <Calendar className="h-5 w-5 group-hover:rotate-12 transition-transform" />
               Book Now
-            </Button>
+            </Link>
           </CardContent>
 
             

@@ -210,7 +210,7 @@ const RoomsPageClient = () => {
           // -------------------------------------------Rooms-------------------------------------------
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {roomsWithImages.map((room) => (
-              <Link key={room.room_id} href={`/rooms/${room.room_id}`} className="block">
+              <Link key={room.room_id} href={`/rooms/${room.room_id}${filteredRooms !== null ? `?check_in=${checkIn}&check_out=${checkOut}` : ""}`} className="block">
                 <Card className="flex flex-col h-full border border-brand-orange overflow-hidden transition-shadow duration-300 hover:border-4 rounded-md bg-brand-black text-white">
                   <div className="w-full h-56 bg-muted flex items-center justify-center overflow-hidden">
                     {room.image_url ? (
