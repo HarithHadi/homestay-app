@@ -3,7 +3,8 @@ import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
 import { setBookingStatus } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { fraunces } from "@/lib/font";
+import { displayFont } from "@/lib/font";
+import { receiptRef } from "@/lib/receiptRef";
 
 export default async function AdminBookingsPage() {
   if (!(await isAdmin())) redirect("/");
@@ -25,16 +26,17 @@ export default async function AdminBookingsPage() {
   return (
     <main className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto px-6 py-12 space-y-4">
-        <h1 className={`${fraunces.className} text-3xl font-bold text-center`}>Pending bookings</h1>
+        <h1 className={`${displayFont.className} text-4xl text-center squiggle`}>Pending bookings</h1>
 
         {!bookings?.length && <p className="text-center text-muted-foreground">Nothing to verify.</p>}
 
         {bookings?.map((b) => (
-          <Card key={b.access_token} className="border border-brand-orange bg-brand-black text-white">
+          <Card key={b.access_token}>
             <CardContent className="p-4 space-y-3">
               <div className="flex flex-wrap justify-between gap-2">
                 <div>
                   <p className="font-semibold">{b.guest_name}</p>
+                  <p className="text-xs text-muted-foreground">Ref {receiptRef(b.access_token)}</p>
                   <p className="text-sm">{b.guest_phone} &middot; {b.guest_email}</p>
                 </div>
                 <div className="text-right">
@@ -48,7 +50,7 @@ export default async function AdminBookingsPage() {
                   href={receiptLink.get(b.receipt_url)}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-brand-orange underline text-sm"
+                  className="text-brand-black font-bold underline decoration-wavy decoration-brand-orange text-sm"
                 >
                   View receipt
                 </a>

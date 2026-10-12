@@ -1,18 +1,23 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createBooking, saveReceipt } from "@/app/actions";
 import { SubmitButton } from "@/components/submit-button";
+import { buttonVariants } from "@/components/ui/button";
+import { BOOKING_COOKIE, parseTokens } from "@/lib/bookingCookie";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { fraunces } from "@/lib/font";
+import { displayFont } from "@/lib/font";
 
-type Params = { room_id?: string; check_in?: string; check_out?: string; error?: string };
+type Params = { room_id?: string; check_in?: string; check_out?: string; booking?: string; error?: string };
 
 export default async function PaymentPage({ searchParams }: { searchParams: Promise<Params> }) {
-  const { room_id, check_in, check_out, error } = await searchParams;
-  const token = (await cookies()).get("booking_token")?.value;
+  const { room_id, check_in, check_out, booking: requested, error } = await searchParams;
+  const tokens = parseTokens((await cookies()).get(BOOKING_COOKIE)?.value);
+  // ?booking= picks one of this browser's bookings; default is the newest.
+  const token = requested && tokens.includes(requested) ? requested : tokens[0];
   const db = createAdminClient();
 
   // The cookie token is the guest's only credential.
@@ -24,28 +29,29 @@ export default async function PaymentPage({ searchParams }: { searchParams: Prom
         .maybeSingle()
     : { data: null };
 
-  const open = booking && booking.BookingStatus !== "CANCELLED" ? booking : null;
+  // A room_id means "start a new booking", so it wins over showing an existing one.
+  const open = !room_id && booking && booking.BookingStatus !== "CANCELLED" ? booking : null;
 
-  if (!open && !room_id) redirect("/rooms");
+  if (!open && !room_id) redirect(tokens.length ? "/bookings" : "/rooms");
 
   return (
     <main className="min-h-screen bg-background">
       <div className="max-w-xl mx-auto px-6 py-12">
-        <Card className="border border-brand-orange rounded-md bg-brand-black text-white">
+        <Card>
           <CardHeader>
-            <CardTitle className={`${fraunces.className} text-3xl font-bold text-brand-orange text-center`}>
+            <CardTitle className={`${displayFont.className} text-4xl text-brand-black squiggle text-center`}>
               {open ? "Complete your payment" : "Your details"}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {error && <p className="text-sm text-red-400">{error}</p>}
+            {error && <p className="text-sm text-red-600">{error}</p>}
 
             {open ? (
-              <PaymentStep booking={open} />
+              <PaymentStep booking={open} token={token!} />
             ) : (
               <form action={createBooking} className="space-y-4">
                 <input type="hidden" name="room_id" value={room_id} />
-                <div className="grid grid-cols-2 gap-3 text-white">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label htmlFor="check_in">Check-in</Label>
                     <Input id="check_in" name="check_in" type="date" defaultValue={check_in} required className="text-black" />
@@ -81,7 +87,9 @@ export default async function PaymentPage({ searchParams }: { searchParams: Prom
 
 function PaymentStep({
   booking,
+  token,
 }: {
+  token: string;
   booking: { in_date: string; out_date: string; total_amount: number; receipt_url: string | null; BookingStatus: string };
 }) {
   const summary = (
@@ -95,7 +103,15 @@ function PaymentStep({
     return (
       <>
         {summary}
-        <p className="text-center text-green-400 font-semibold">Payment verified. Your booking is confirmed!</p>
+        <p className="text-center text-green-700 font-semibold">Payment verified. Your booking is confirmed!</p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link href={`/bookings/${token}`} className={`${buttonVariants()} flex-1 py-6`}>
+            View receipt
+          </Link>
+          <Link href="/bookings" className={`${buttonVariants({ variant: "secondary" })} flex-1 py-6`}>
+            My bookings
+          </Link>
+        </div>
       </>
     );
   }
@@ -107,6 +123,9 @@ function PaymentStep({
         <p className="text-center">
           Receipt received. The owner is verifying your payment, your booking stays <strong>pending</strong> until then.
         </p>
+        <Link href="/bookings" className={`${buttonVariants({ variant: "secondary" })} w-full py-6`}>
+          My bookings
+        </Link>
       </>
     );
   }
@@ -114,13 +133,14 @@ function PaymentStep({
   return (
     <>
       {summary}
-      <div className="flex justify-center bg-white rounded-md p-4">
+      <div className="flex justify-center bg-white border-2 border-dashed rounded-md p-4">
         <img src="/payment-qr.jpeg" alt="Scan to pay" className="w-64 h-64 object-contain" />
       </div>
       <p className="text-sm text-center text-muted-foreground">
         Scan with your banking app and transfer the exact amount, then upload your receipt below.
       </p>
       <form action={saveReceipt} className="space-y-3">
+        <input type="hidden" name="token" value={token} />
         <Input name="receipt" type="file" accept="image/*,application/pdf" required className="text-black bg-white" />
         <SubmitButton pendingText="Uploading..." className="w-full bg-orange-500 hover:bg-orange-600 py-6">
           I&apos;ve paid, send receipt

@@ -144,10 +144,10 @@ const RoomsPageClient = () => {
         </h1>
 
         {/* Search bar */}
-        <Card className="mb-8 bg-brand-black ">
+        <Card className="mb-8 bg-brand-yellow">
           <CardContent className="p-4">
             <div className="flex flex-col sm:flex-row gap-4 sm:items-end">
-              <div className="flex-1 text-white">
+              <div className="flex-1">
                 <Label htmlFor="check-in" className="mb-1 block font-semibold">
                   Check-In Date
                 </Label>
@@ -156,10 +156,10 @@ const RoomsPageClient = () => {
                   type="date"
                   value={checkIn}
                   onChange={(e) => setCheckIn(e.target.value)}
-                  className="border border-black text-black"
+                  className="text-black"
                 />
               </div>
-              <div className="flex-1 text-white">
+              <div className="flex-1">
                 <Label htmlFor="check-out" className="mb-1 block font-semibold">
                   Check-Out Date
                 </Label>
@@ -169,7 +169,7 @@ const RoomsPageClient = () => {
                   value={checkOut}
                   min={checkIn || undefined}
                   onChange={(e) => setCheckOut(e.target.value)}
-                  className="border border-black text-black"
+                  className="text-black"
                 />
               </div>
               <div className="flex gap-2">
@@ -211,7 +211,7 @@ const RoomsPageClient = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {roomsWithImages.map((room) => (
               <Link key={room.room_id} href={`/rooms/${room.room_id}${filteredRooms !== null ? `?check_in=${checkIn}&check_out=${checkOut}` : ""}`} className="block">
-                <Card className="flex flex-col h-full border border-brand-orange overflow-hidden transition-shadow duration-300 hover:border-4 rounded-md bg-brand-black text-white">
+                <Card className="flex flex-col h-full overflow-hidden transition-transform duration-200 hover:-rotate-1 hover:-translate-y-1">
                   <div className="w-full h-56 bg-muted flex items-center justify-center overflow-hidden">
                     {room.image_url ? (
                       <img

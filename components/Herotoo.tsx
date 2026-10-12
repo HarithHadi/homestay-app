@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { Fraunces } from "next/font/google";
 import Image from "next/image"
 import { Button } from "./ui/button";
-const fraunces = Fraunces({
+const displayFont = Fraunces({
     subsets: ["latin"],
     weight: ["900"],
     display: "swap",
@@ -38,7 +38,7 @@ export default function Herotoo() {
             <div className="w-full h-full px-6 md:px-16 grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
                 {/* Left: text content */}
                 <div className="space-y-8 z-10 p-14 rounded-3xl">
-                    <h1 className={`${fraunces.className} text-5xl md:text-9xl font-extrabold leading-tight text-orange-500`}>
+                    <h1 className={`${displayFont.className} text-5xl md:text-9xl font-extrabold leading-tight text-orange-500`}>
                         Swit60 Homestay
                     </h1>
                     <p className="text-lg max-w-md font-bold">

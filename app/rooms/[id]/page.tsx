@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import RoomCarou from "@/components/RoomCarou";
 import { Calendar } from "lucide-react";
-import { fraunces } from "@/lib/font";
+import { displayFont } from "@/lib/font";
 
 export default async function RoomPage(props: any) {
   // Cast params to the shape we expect
@@ -42,9 +42,9 @@ export default async function RoomPage(props: any) {
           <RoomCarou roomId={room.room_id} />
         </div>
 
-        <Card className="border border-brand-orange rounded-md bg-brand-black text-white">
+        <Card>
           <CardHeader>
-            <CardTitle className={`${fraunces.className} text-3xl font-bold text-brand-orange justify-center`}>
+            <CardTitle className={`${displayFont.className} text-4xl text-brand-black squiggle justify-center`}>
               {room.room_name}
             </CardTitle>
           </CardHeader>
@@ -54,13 +54,13 @@ export default async function RoomPage(props: any) {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-brand-black">
-              <div className="p-4 bg-secondary rounded-lg shadow-sm">
+              <div className="p-4 bg-brand-yellow/60 border-2 border-dashed rounded-lg">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Capacity
                 </p>
                 <p className="text-2xl font-bold mt-1">{room.room_capacity} people</p>
               </div>
-              <div className="p-4 bg-secondary rounded-lg shadow-sm">
+              <div className="p-4 bg-brand-yellow/60 border-2 border-dashed rounded-lg">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Price
                 </p>
@@ -68,7 +68,7 @@ export default async function RoomPage(props: any) {
               </div>
             </div>
 
-            <div className="p-4 bg-secondary rounded-lg shadow-sm text-brand-black">
+            <div className="p-4 bg-brand-yellow/60 border-2 border-dashed rounded-lg text-brand-black">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
                 Room Amenities
               </p>
@@ -81,7 +81,7 @@ export default async function RoomPage(props: any) {
 
             <Link
               href={`/Payment?${new URLSearchParams({ room_id: id, ...dates })}`}
-              className="bg-orange-500 w-full py-6 text-lg font-semibold rounded-md hover:bg-orange-600 transition-colors group flex items-center justify-center gap-2"
+              className="bg-orange-500 w-full py-4 text-xl text-brand-black border-2 border-brand-black shadow-[3px_3px_0_0_#323130] rounded-md hover:bg-orange-400 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-colors group flex items-center justify-center gap-2"
             >
               <Calendar className="h-5 w-5 group-hover:rotate-12 transition-transform" />
               Book Now

@@ -1,8 +1,16 @@
-// lib/fonts.ts
-import { Fraunces } from "next/font/google";
+// lib/font.ts
+import { Gochi_Hand, Patrick_Hand } from "next/font/google";
 
-export const fraunces = Fraunces({
+// Headings / logo (apply via displayFont.className)
+export const displayFont = Gochi_Hand({
   subsets: ["latin"],
-  weight: ["900"],
+  weight: "400",
+  display: "swap",
+});
+
+// Body text, set on <html> in app/layout.tsx
+export const bodyFont = Patrick_Hand({
+  subsets: ["latin"],
+  weight: "400",
   display: "swap",
 });

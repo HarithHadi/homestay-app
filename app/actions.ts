@@ -4,6 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
 import { validateReceipt } from "@/lib/validateReceipt";
+import { BOOKING_COOKIE, addToken, parseTokens } from "@/lib/bookingCookie";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -292,8 +293,6 @@ export async function checkAvailability(formData: FormData){
 
 
 // ---------- Guest QR payment (cookie-identified, no account) ----------
-const BOOKING_COOKIE = "booking_token";
-
 export async function createBooking(formData: FormData) {
   const roomId = Number(formData.get("room_id"));
   const checkIn = formData.get("check_in")?.toString() ?? "";
@@ -349,7 +348,8 @@ export async function createBooking(formData: FormData) {
     return back("Could not create your booking. Please try again.");
   }
 
-  (await cookies()).set(BOOKING_COOKIE, booking.access_token, {
+  const jar = await cookies();
+  jar.set(BOOKING_COOKIE, addToken(jar.get(BOOKING_COOKIE)?.value, booking.access_token), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -360,14 +360,19 @@ export async function createBooking(formData: FormData) {
 }
 
 export async function saveReceipt(formData: FormData) {
-  const token = (await cookies()).get(BOOKING_COOKIE)?.value;
+  // Only a booking whose token is in this browser's cookie can receive a receipt.
+  const token = formData.get("token")?.toString() ?? "";
+  const owned = parseTokens((await cookies()).get(BOOKING_COOKIE)?.value).includes(token);
+  if (!owned) return redirect("/bookings");
+
+  const back = (error: string): never =>
+    redirect(`/Payment?${new URLSearchParams({ booking: token, error })}`);
+
   const file = formData.get("receipt");
-  if (!token || !(file instanceof File) || file.size === 0) {
-    return encodedRedirect("error", "/Payment", "Please choose your receipt file.");
-  }
+  if (!(file instanceof File) || file.size === 0) return back("Please choose your receipt file.");
 
   const invalid = validateReceipt(file);
-  if (invalid) return encodedRedirect("error", "/Payment", invalid);
+  if (invalid) return back(invalid);
 
   const db = createAdminClient();
   const path = `${token}.${file.type.split("/")[1]}`; // extension from the validated MIME type, not the filename
@@ -376,7 +381,7 @@ export async function saveReceipt(formData: FormData) {
     .upload(path, file, { upsert: true, contentType: file.type });
   if (error) {
     console.error(error.message);
-    return encodedRedirect("error", "/Payment", "Upload failed. Please try again.");
+    return back("Upload failed. Please try again.");
   }
 
   await db
@@ -384,7 +389,7 @@ export async function saveReceipt(formData: FormData) {
     .update({ receipt_url: path })
     .eq("access_token", token)
     .eq("BookingStatus", "PENDING");
-  redirect("/Payment");
+  redirect(`/Payment?booking=${token}`);
 }
 
 export async function setBookingStatus(formData: FormData) {

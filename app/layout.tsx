@@ -5,7 +5,7 @@ import { EnvVarWarning } from "@/components/env-var-warning";
 import HeaderAuth from "@/components/header-auth";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
-import { Geist } from "next/font/google";
+import { bodyFont } from "@/lib/font";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css"; // Import your global CSS
@@ -17,18 +17,13 @@ const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
-const geistSans = Geist({
-  display: "swap",
-  subsets: ["latin"],
-});
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.className} h-full`} suppressHydrationWarning>
+    <html lang="en" className={`${bodyFont.className} h-full`} suppressHydrationWarning>
       <body className="bg-background h-full flex flex-col"> 
         <ThemeProvider
           attribute="class"
