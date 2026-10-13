@@ -18,6 +18,8 @@ module.exports = {
         'brand-orange-hover': 'oklch(0.8 0.14 55)',
         'brand-navy': 'oklch(0.2 0.03 260)',
         'brand-yellow': '#FDF4AF',
+        'brand-green': '#CFE8C4',
+        'brand-green-dark': '#4C8A3C',
         'brand-black': '#323130',
         
         primary: {

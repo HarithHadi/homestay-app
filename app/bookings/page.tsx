@@ -9,7 +9,7 @@ import { displayFont } from "@/lib/font";
 
 const badge: Record<string, string> = {
   PENDING: "bg-brand-yellow",
-  CONFIRMED: "bg-green-200",
+  CONFIRMED: "bg-brand-green",
   CANCELLED: "bg-red-200",
 };
 

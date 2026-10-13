@@ -18,7 +18,7 @@ export default function Hero() {
           <h1 className="text-4xl md:text-5xl font-bold">
             Welcome to Swit60 Homestay 🏠
           </h1>
-          <Button className="mt-4 px-6 py-3 text-lg transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-lg" onClick={handleClick}>
+          <Button className="mt-4 px-6 py-3 text-lg font-bold transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-lg" onClick={handleClick}>
             Book Now
           </Button>
         </div>

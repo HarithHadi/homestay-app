@@ -41,3 +41,8 @@ Homestay booking app built on the Next.js 15 (App Router, React 19) + Supabase s
 - Brand colors in `tailwind.config.ts`: `brand-orange`, `brand-orange-hover`, `brand-navy`, `brand-yellow`, `brand-black`. Theme tokens are CSS variables in `app/globals.css`.
 - Display font: `fraunces` from `lib/font.ts` (apply via `fraunces.className`); body font Geist set in `app/layout.tsx`.
 - `components/tutorial/`, `deploy-button`, `env-var-warning`, `next-logo`, `supabase-logo` are leftover starter-kit files.
+
+## Session handoff
+
+- When the user says they're done for the day (or "done", "wrapping up", "stopping here"), overwrite the project memory file `last-session.md` (type `project`, indexed in `MEMORY.md`) with: what we worked on, what's finished, what's half-done, the exact next step, and any open questions. Keep it under ~20 lines.
+- At the start of a session, read `last-session.md` and open with a one-line "where we left off" before doing anything else.

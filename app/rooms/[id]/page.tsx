@@ -54,13 +54,13 @@ export default async function RoomPage(props: any) {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-brand-black">
-              <div className="p-4 bg-brand-yellow/60 border-2 border-dashed rounded-lg">
+              <div className="p-4 bg-brand-green/70 border-2 border-dashed rounded-lg">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Capacity
                 </p>
                 <p className="text-2xl font-bold mt-1">{room.room_capacity} people</p>
               </div>
-              <div className="p-4 bg-brand-yellow/60 border-2 border-dashed rounded-lg">
+              <div className="p-4 bg-brand-green/70 border-2 border-dashed rounded-lg">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Price
                 </p>
@@ -68,7 +68,7 @@ export default async function RoomPage(props: any) {
               </div>
             </div>
 
-            <div className="p-4 bg-brand-yellow/60 border-2 border-dashed rounded-lg text-brand-black">
+            <div className="p-4 bg-brand-green/70 border-2 border-dashed rounded-lg text-brand-black">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
                 Room Amenities
               </p>

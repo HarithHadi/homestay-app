@@ -85,6 +85,8 @@
     --color-brand-orange-hover: var(--brand-orange-hover);
     --color-brand-navy: var(--brand-navy);
     --color-brand-black: #323130;
+    --color-brand-green: #CFE8C4;
+    --color-brand-green-dark: #4C8A3C;
   }
 
   @layer base {

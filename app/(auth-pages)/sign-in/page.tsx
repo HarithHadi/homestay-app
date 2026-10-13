@@ -12,7 +12,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
   const searchParams = await props.searchParams;
   return (
     <>
-      <form className="flex-1 flex flex-col min-w-64">
+      <form className="flex flex-col min-w-64">
         <h1 className="text-2xl font-medium">Sign in</h1>
         <p className="text-sm text-foreground">
           Don't have an account?{" "}
@@ -46,7 +46,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
       </form>
       <div className="flex flex-col min-w-64 max-w-64 mx-auto">
             {/* 🔹 Divider */}
-            <div className="flex items-center gap-2 my-4">
+            <div className="flex items-center my-4">
               <hr className="flex-1 border-border" />
               <span className="text-xs text-muted-foreground">OR</span>
               <hr className="flex-1 border-border" />
