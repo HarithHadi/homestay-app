@@ -397,8 +397,30 @@ export async function setBookingStatus(formData: FormData) {
 
   const token = formData.get("token")?.toString();
   const status = formData.get("status")?.toString();
-  if (!token || (status !== "CONFIRMED" && status !== "CANCELLED")) return;
+  if (!token || (status !== "CONFIRMED" && status !== "CANCELLED" && status !== "PENDING")) return;
 
-  await createAdminClient().from("booking").update({ BookingStatus: status }).eq("access_token", token);
+  const db = createAdminClient();
+  if (status === "PENDING") {
+    // A rejected booking released its dates; someone may have taken them since.
+    // No self-exclusion needed: this booking is still CANCELLED during the check.
+    const { data: booking } = await db
+      .from("booking")
+      .select("room_id, in_date, out_date")
+      .eq("access_token", token)
+      .single();
+    if (!booking) return;
+
+    const { data: clash } = await db
+      .from("booking")
+      .select("room_id")
+      .eq("room_id", booking.room_id) // same room
+      .lt("in_date", booking.out_date) // existing booking starts before this one ends
+      .gt("out_date", booking.in_date) // existing booking ends after this one starts
+      .neq("BookingStatus", "CANCELLED")
+      .limit(1);
+    if (clash?.length) return;
+  }
+
+  await db.from("booking").update({ BookingStatus: status }).eq("access_token", token);
   revalidatePath("/admin/bookings");
 }

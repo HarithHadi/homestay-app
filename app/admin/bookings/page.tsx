@@ -59,14 +59,13 @@ function BookingCard({ b, url }: { b: Booking; url?: string }) {
           </div>
           <div className="text-right">
             <p className="font-semibold">RM {Number(b.total_amount).toFixed(2)}</p>
-            <p className="text-sm">Room {b.room_id} &middot; {b.in_date} to {b.out_date}</p>
+            <p className="text-sm">Room {b.room_id} &middot; {b.in_date} to {b.out_date}</p>            
           </div>
         </div>
 
         {b.receipt_url ? (
-          pending ? (
-            <ReceiptPreview path={b.receipt_url} url={url} />
-          ) : (
+          pending ? ( <ReceiptPreview path={b.receipt_url} url={url} /> ) 
+          : (
             // Approved history: collapsed so a long list stays scannable.
             <details>
               <summary className="cursor-pointer text-sm font-bold">Show receipt</summary>
@@ -95,6 +94,14 @@ function BookingCard({ b, url }: { b: Booking; url?: string }) {
               </form>
             ))}
           </div>
+        )}
+
+        {b.BookingStatus === "CANCELLED" && (
+          <form action={setBookingStatus}>
+            <input type="hidden" name="token" value={b.access_token} />
+            <input type="hidden" name="status" value="PENDING" />
+            <Button type="submit" variant="outline">Restore to pending</Button>
+          </form>
         )}
       </CardContent>
     </Card>

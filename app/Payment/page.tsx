@@ -14,8 +14,10 @@ import { displayFont } from "@/lib/font";
 type Params = { room_id?: string; check_in?: string; check_out?: string; booking?: string; error?: string };
 
 export default async function PaymentPage({ searchParams }: { searchParams: Promise<Params> }) {
+
   const { room_id, check_in, check_out, booking: requested, error } = await searchParams;
   const tokens = parseTokens((await cookies()).get(BOOKING_COOKIE)?.value);
+  
   // ?booking= picks one of this browser's bookings; default is the newest.
   const token = requested && tokens.includes(requested) ? requested : tokens[0];
   const db = createAdminClient();

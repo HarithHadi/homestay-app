@@ -15,10 +15,6 @@ export function validateReceipt(file: File): string | null {
   if(file.size > MAX_FILE_SIZE){
     return "File size exceeds the 5MB limit.";
   }
-
-  console.log('File is valid:', file.name);
   
-
-  // Fails closed until implemented, so uploads are rejected rather than unchecked.
   return null;
 }
