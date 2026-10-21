@@ -132,7 +132,8 @@ export async function signInWithGoogle(next?: string){
   const {data, error} = await (await supabase).auth.signInWithOAuth({
     provider : "google",
     options : {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?redirect_to=${encodeURIComponent(safeRedirect(next))}`,
+      // Request origin, so Vercel previews come back to the preview, not production.
+      redirectTo: `${(await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?redirect_to=${encodeURIComponent(safeRedirect(next))}`,
     },
   });
 
