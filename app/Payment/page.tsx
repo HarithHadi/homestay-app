@@ -11,7 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { displayFont } from "@/lib/font";
 
-type Params = { room_id?: string; check_in?: string; check_out?: string; booking?: string; error?: string };
+type Params = { 
+  room_id?: string;
+  check_in?: string;
+  check_out?: string; 
+  booking?: string; 
+  error?: string 
+};
 
 export default async function PaymentPage({ searchParams }: { searchParams: Promise<Params> }) {
 
@@ -37,7 +43,7 @@ export default async function PaymentPage({ searchParams }: { searchParams: Prom
   if (!open && !room_id) redirect(tokens.length ? "/bookings" : "/rooms");
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen">
       <div className="max-w-xl mx-auto px-6 py-12">
         <Card>
           <CardHeader>

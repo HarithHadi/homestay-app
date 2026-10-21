@@ -33,7 +33,7 @@ export default async function BookingsPage() {
   const roomName = new Map((rooms ?? []).map((r) => [r.room_id, r.room_name]));
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen ">
       <div className="max-w-2xl mx-auto px-6 py-12 space-y-4">
         <h1 className={`${displayFont.className} text-4xl text-center squiggle`}>My bookings</h1>
 

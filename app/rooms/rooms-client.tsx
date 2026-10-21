@@ -114,7 +114,7 @@ const RoomsPageClient = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen  flex items-center justify-center">
         <p className="text-foreground">Loading rooms...</p>
       </div>
     );
@@ -122,7 +122,7 @@ const RoomsPageClient = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <Alert variant="destructive" className="max-w-lg">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
@@ -137,7 +137,7 @@ const RoomsPageClient = () => {
   return (
 
     
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <div className="max-w-6xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold mb-8 text-center text-foreground">
           All Rooms

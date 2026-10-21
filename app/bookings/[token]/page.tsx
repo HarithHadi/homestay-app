@@ -23,7 +23,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ token:
   // A receipt for a payment nobody has verified would be misleading.
   if (b.BookingStatus !== "CONFIRMED") {
     return (
-      <main className="min-h-screen bg-background">
+      <main className="min-h-screen">
         <div className="max-w-xl mx-auto px-6 py-12 space-y-4 text-center">
           <p>Your receipt is available once the owner has verified your payment.</p>
           <Link href="/bookings" className={buttonVariants()}>
@@ -53,7 +53,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ token:
   );
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen">
       <div className="max-w-xl mx-auto px-6 py-12 space-y-4">
         <Card>
           <CardHeader>

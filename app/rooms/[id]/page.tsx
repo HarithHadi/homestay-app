@@ -29,14 +29,14 @@ export default async function RoomPage(props: any) {
 
   if (error || !room) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <p className="text-foreground">Room not found</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <div className="max-w-6xl mx-auto px-6 py-12 space-y-5">
         <div>
           <RoomCarou roomId={room.room_id} />
