@@ -3,6 +3,7 @@ import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
 import { setBookingStatus } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { FlashError } from "@/components/flash-error";
 import { displayFont } from "@/lib/font";
 import { receiptRef } from "@/lib/receiptRef";
 
@@ -108,8 +109,9 @@ function BookingCard({ b, url }: { b: Booking; url?: string }) {
   );
 }
 
-export default async function AdminBookingsPage() {
+export default async function AdminBookingsPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   if (!(await isAdmin())) redirect("/");
+  const { error } = await searchParams;
 
   const db = createAdminClient();
   const { data } = await db
@@ -133,9 +135,11 @@ export default async function AdminBookingsPage() {
   const receiptLink = new Map((signed ?? []).map((s) => [s.path, s.signedUrl]));
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen ">
       <div className="max-w-3xl mx-auto px-6 py-12 space-y-4">
         <h1 className={`${displayFont.className} text-4xl text-center squiggle`}>Pending bookings</h1>
+
+        {error && <FlashError message={error} />}
 
         {!pending.length && <p className="text-center text-muted-foreground">Nothing to verify.</p>}
         {pending.map((b) => (

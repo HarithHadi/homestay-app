@@ -314,6 +314,22 @@ export async function createBooking(formData: FormData) {
   if (checkIn < new Date().toISOString().slice(0, 10)) return back("Check-in can't be in the past.");
 
   const db = createAdminClient();
+  const jar = await cookies();
+  const myTokens = parseTokens(jar.get(BOOKING_COOKIE)?.value);
+
+  if(myTokens.length) {
+    const {data: mine} = await db
+      .from("booking")
+      .select('access_token')
+      .in("access_token", myTokens)
+      .eq("room_id", roomId)
+      .eq("in_date", checkIn)
+      .eq("out_date", checkOut)
+      .neq("BookingStatus", "CANCELLED")
+      .limit(1)
+      .maybeSingle();
+    if(mine) redirect(`/Payment?booking=${mine.access_token}`);
+  }
 
   // Price comes from the DB, never from the client.
   const { data: room } = await db.from("rooms").select("room_price").eq("room_id", roomId).single();
@@ -348,7 +364,7 @@ export async function createBooking(formData: FormData) {
     return back("Could not create your booking. Please try again.");
   }
 
-  const jar = await cookies();
+  
   jar.set(BOOKING_COOKIE, addToken(jar.get(BOOKING_COOKIE)?.value, booking.access_token), {
     httpOnly: true,
     sameSite: "lax",
@@ -418,9 +434,12 @@ export async function setBookingStatus(formData: FormData) {
       .gt("out_date", booking.in_date) // existing booking ends after this one starts
       .neq("BookingStatus", "CANCELLED")
       .limit(1);
-    if (clash?.length) return;
+    if (clash?.length) {
+      return encodedRedirect("error", "/admin/bookings", "The Room was already booked");
+    }
   }
 
   await db.from("booking").update({ BookingStatus: status }).eq("access_token", token);
   revalidatePath("/admin/bookings");
+  redirect("/admin/bookings"); // drops any stale ?error= from the URL
 }
