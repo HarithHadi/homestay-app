@@ -8,10 +8,10 @@ import { completeProfile } from "@/app/actions";
 export default async function Complete({
   searchParams,
 }: {
-  searchParams: Promise<{ phone?: string }>;
+  searchParams: Promise<{ phone?: string; redirect_to?: string }>;
 }){
 
-    const { phone } = await searchParams;
+    const { phone, redirect_to } = await searchParams;
     return (
     <>
       <form className="flex flex-col min-w-64 max-w-70 mx-auto">
@@ -22,6 +22,7 @@ export default async function Complete({
         
 
         <div className="flex flex-col gap-3 [&>input]:mb-3 mt-8">
+          <input type="hidden" name="redirect_to" value={redirect_to ?? "/"} />
 
           <div className="flex gap-3">
             <div className="">

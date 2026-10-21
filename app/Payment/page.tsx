@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/utils/supabase/admin";
+import { createClient } from "@/utils/supabase/server";
 import { createBooking, saveReceipt } from "@/app/actions";
 import { SubmitButton } from "@/components/submit-button";
 import { buttonVariants } from "@/components/ui/button";
@@ -42,6 +43,13 @@ export default async function PaymentPage({ searchParams }: { searchParams: Prom
 
   if (!open && !room_id) redirect(tokens.length ? "/bookings" : "/rooms");
 
+  // Starting a new booking needs an account; createBooking re-checks this.
+  const { data: { user } } = room_id ? await (await createClient()).auth.getUser() : { data: { user: null } };
+  if (room_id && !user) {
+    const here = `/Payment?${new URLSearchParams({ room_id, check_in: check_in ?? "", check_out: check_out ?? "" })}`;
+    redirect(`/sign-in?${new URLSearchParams({ redirect_to: here })}`);
+  }
+
   return (
     <main className="min-h-screen">
       <div className="max-w-xl mx-auto px-6 py-12">
@@ -79,7 +87,7 @@ export default async function PaymentPage({ searchParams }: { searchParams: Prom
                 </div>
                 <div>
                   <Label htmlFor="guest_email">Email</Label>
-                  <Input id="guest_email" name="guest_email" type="email" required className="text-black" />
+                  <Input id="guest_email" name="guest_email" type="email" defaultValue={user?.email} required className="text-black" />
                 </div>
                 <SubmitButton pendingText="Reserving..." className="w-full bg-orange-500 hover:bg-orange-600 py-6">
                   Continue to payment

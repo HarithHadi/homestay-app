@@ -1,6 +1,6 @@
 "use server";
 
-import { encodedRedirect } from "@/utils/utils";
+import { encodedRedirect, safeRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient, isAdmin } from "@/utils/supabase/admin";
 import { validateReceipt } from "@/lib/validateReceipt";
@@ -57,6 +57,7 @@ export const signUpAction = async (formData: FormData) => {
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const next = safeRedirect(formData.get("redirect_to")?.toString());
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -65,10 +66,10 @@ export const signInAction = async (formData: FormData) => {
   });
 
   if (error) {
-    return encodedRedirect("error", "/sign-in", error.message);
+    return redirect(`/sign-in?${new URLSearchParams({ error: error.message, redirect_to: next })}`);
   }
 
-  return redirect("/");
+  return redirect(next);
 };
 
 export async function signUpwithPhone(formData : FormData){
@@ -125,13 +126,13 @@ export async function verifyOTP(formData: FormData) {
 }
 
 
-export async function signInWithGoogle(){
+export async function signInWithGoogle(next?: string){
   const supabase = createClient();
 
   const {data, error} = await (await supabase).auth.signInWithOAuth({
     provider : "google",
     options : {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?redirect_to=${encodeURIComponent(safeRedirect(next))}`,
     },
   });
 
@@ -182,7 +183,7 @@ export const completeProfile = async (formData: FormData) => {
     throw error;
   }
 
-  redirect("/")
+  redirect(safeRedirect(formData.get("redirect_to")?.toString()))
 };
 
 
@@ -292,7 +293,7 @@ export async function checkAvailability(formData: FormData){
 }
 
 
-// ---------- Guest QR payment (cookie-identified, no account) ----------
+// ---------- Guest QR payment (login required to book; cookie still identifies the booking) ----------
 export async function createBooking(formData: FormData) {
   const roomId = Number(formData.get("room_id"));
   const checkIn = formData.get("check_in")?.toString() ?? "";
@@ -301,10 +302,12 @@ export async function createBooking(formData: FormData) {
   const guest_phone = formData.get("guest_phone")?.toString().trim() ?? "";
   const guest_email = formData.get("guest_email")?.toString().trim() ?? "";
 
-  const back = (error: string): never =>
-    redirect(
-      `/Payment?${new URLSearchParams({ room_id: String(roomId), check_in: checkIn, check_out: checkOut, error })}`
-    );
+  const formUrl = `/Payment?${new URLSearchParams({ room_id: String(roomId), check_in: checkIn, check_out: checkOut })}`;
+  const back = (error: string): never => redirect(`${formUrl}&${new URLSearchParams({ error })}`);
+
+  // The page hides the form when logged out; this is the real check.
+  const { data: { user } } = await (await createClient()).auth.getUser();
+  if (!user) redirect(`/sign-in?${new URLSearchParams({ redirect_to: formUrl })}`);
 
   if (!roomId || !guest_name || !guest_phone || !guest_email) {
     return back("Please fill in all fields.");
@@ -355,6 +358,7 @@ export async function createBooking(formData: FormData) {
       guest_name,
       guest_phone,
       guest_email,
+      user_id: user.id,
       total_amount: nights * room.room_price,
     })
     .select("access_token")

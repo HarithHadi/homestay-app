@@ -8,8 +8,9 @@ import OtpButton from "@/components/ui/OtpButton";
 
 import Link from "next/link";
 
-export default async function Login(props: { searchParams: Promise<Message> }) {
+export default async function Login(props: { searchParams: Promise<Message & { redirect_to?: string }> }) {
   const searchParams = await props.searchParams;
+  const redirectTo = searchParams.redirect_to ?? "/";
   return (
     <>
       <form className="flex flex-col min-w-64">
@@ -21,6 +22,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
           </Link>
         </p>
         <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
+          <input type="hidden" name="redirect_to" value={redirectTo} />
           <Label htmlFor="email">Email</Label>
           <Input name="email" placeholder="you@example.com" required />
           <div className="flex justify-between items-center">
@@ -54,7 +56,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
 
             {/* 🔹 Google Sign Up */}
             <div className="pb-3">
-                <GoogleAuthButton></GoogleAuthButton>
+                <GoogleAuthButton next={redirectTo} />
             </div>
             
             {/* <OtpButton></OtpButton> */}

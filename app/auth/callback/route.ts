@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
+import { safeRedirect } from "@/utils/utils";
 
 export async function GET(request: Request) {
   // The `/auth/callback` route is required for the server-side auth flow implemented
@@ -9,6 +10,7 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get("code");
   const origin = requestUrl.origin;
   const redirectTo = requestUrl.searchParams.get("redirect_to")?.toString();
+  const next = safeRedirect(redirectTo);
 
   if (code) {
     const supabase = await createClient();
@@ -20,14 +22,14 @@ export async function GET(request: Request) {
     } = await supabase.auth.getUser();
 
     if(user) {
-      const { data:profile} = await supabase.from("Profiles").select("id").eq("id", user.id).single();
+      const { data:profile} = await supabase.from("profiles").select("id").eq("id", user.id).maybeSingle();
 
       if(!profile){
-        return NextResponse.redirect(new URL("/complete-profile", request.url));
+        return NextResponse.redirect(new URL(`/complete-profile?${new URLSearchParams({ redirect_to: next })}`, origin));
       }
     }
 
-    return NextResponse.redirect(new URL("/", requestUrl));
+    return NextResponse.redirect(new URL(next, origin));
   }
 
   if (redirectTo) {
