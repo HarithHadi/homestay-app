@@ -11,6 +11,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"; 
 import Image from "next/image";
@@ -59,7 +60,8 @@ export default function RoomCarou({ roomId }: { roomId: number }) {
                     </div>
                   </DialogTrigger>
                   
-                  <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 border-none bg-transparent">
+                  <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 border-none bg-transparent [&>button]:!text-brand-orange [&>button]:!bg-white [&>button]:rounded-lg">
+                    <DialogTitle className="sr-only">Room photo</DialogTitle>
                     <div className="relative w-full h-[80vh]">
                       <Image
                         src={images[current]} 
