@@ -15,13 +15,8 @@ export default async function Login(props: { searchParams: Promise<Message & { r
     <>
       <form className="flex flex-col min-w-64">
         <h1 className="text-2xl font-medium">Sign in</h1>
-        <p className="text-sm text-foreground">
-          Don't have an account?{" "}
-          <Link className="text-foreground font-medium underline" href="/sign-up">
-            Sign up
-          </Link>
-        </p>
-        <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
+        
+        <div className="flex flex-col [&>input]:mb-3 mt-8">
           <input type="hidden" name="redirect_to" value={redirectTo} />
           <Label htmlFor="email">Email</Label>
           <Input name="email" placeholder="you@example.com" required />
@@ -45,10 +40,17 @@ export default async function Login(props: { searchParams: Promise<Message & { r
           </SubmitButton>
           <FormMessage message={searchParams} />
         </div>
+        
       </form>
+      <p className="text-sm text-foreground">
+          Don't have an account?{" "}
+          <Link className="text-foreground font-medium underline" href="/sign-up">
+            Sign up
+          </Link>
+      </p>
       <div className="flex flex-col min-w-64 max-w-64 mx-auto">
             {/* 🔹 Divider */}
-            <div className="flex items-center my-4">
+            <div className="flex items-center mb-4">
               <hr className="flex-1 border-border" />
               <span className="text-xs text-muted-foreground">OR</span>
               <hr className="flex-1 border-border" />

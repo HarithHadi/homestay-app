@@ -211,7 +211,7 @@ const RoomsPageClient = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {roomsWithImages.map((room) => (
               <Link key={room.room_id} href={`/rooms/${room.room_id}${filteredRooms !== null ? `?check_in=${checkIn}&check_out=${checkOut}` : ""}`} className="block">
-                <Card className="flex flex-col h-full overflow-hidden transition-transform duration-200 hover:-rotate-1 hover:-translate-y-1">
+                <Card className="flex flex-col h-full overflow-hidden transition-transform duration-200 hover:-rotate-1 hover:-translate-y-1 bg-[#FDF4AF]">
                   <div className="w-full h-56 bg-muted flex items-center justify-center overflow-hidden">
                     {room.image_url ? (
                       <img

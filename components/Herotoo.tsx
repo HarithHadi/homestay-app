@@ -14,7 +14,7 @@ export default function Herotoo() {
         router.push("/rooms");
     };
     return (
-        <section className="relative h-full w-full text-foreground flex items-center bg-[#FDF4AF] overflow-hidden py-12 lg:py-0">
+        <section className="relative h-full w-full text-foreground flex items-center bg-background overflow-hidden py-12 lg:py-0">
         <div 
         className="absolute inset-0 z-0"
         style={{

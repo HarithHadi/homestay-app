@@ -5,7 +5,7 @@
   @layer base {
     :root {
       --radius: 0.625rem;
-      --background: oklch(0.9583 0.0877 101.59);
+      --background: oklch(99.254% 0.00215 200.011);
       --foreground: oklch(0.36 0.0154 259.81);
       --card: oklch(1 0 0);
       --card-foreground: oklch(0.13 0.028 261.692);
@@ -104,6 +104,15 @@
       text-decoration: underline wavy var(--brand-orange);
       text-decoration-thickness: 3px;
       text-underline-offset: 8px;
+    }
+    /* iOS Safari draws date inputs natively: ignores our height and centres the value */
+    input[type="date"] {
+      -webkit-appearance: none;
+      appearance: none;
+      min-height: 2.5rem;
+    }
+    input[type="date"]::-webkit-date-and-time-value {
+      text-align: left;
     }
   }
 
