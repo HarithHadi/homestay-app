@@ -116,10 +116,13 @@ export async function verifyOTP(formData: FormData) {
     .eq("id", user.id)
     .single();
 
+
+
     if (!profile || !profile.first_name || !profile.date_of_birth) {
       return redirect(`/complete-profile?phone=${encodeURIComponent(phone)}`);
     }
   }
+  
 
   console.log("Login success!", data.session);
   redirect("/");

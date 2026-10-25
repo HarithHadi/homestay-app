@@ -16,26 +16,29 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     await supabase.auth.exchangeCodeForSession(code);
 
-    const {
-      data: {user},
-
-    } = await supabase.auth.getUser();
+    const {data: {user},} = await supabase.auth.getUser();
 
     if(user) {
       const { data:profile} = await supabase.from("profiles").select("id").eq("id", user.id).maybeSingle();
 
-      if(!profile){
-        return NextResponse.redirect(new URL(`/complete-profile?${new URLSearchParams({ redirect_to: next })}`, origin));
+      if (!profile) {
+        const m = user.user_metadata;
+        const { error } = m.first_name && m.dob
+          ? await supabase.from("profiles").upsert({
+              id: user.id,
+              first_name: m.first_name,
+              surname: m.surname,
+              date_of_birth: new Date(m.dob).toISOString(),
+              phone_number: m.phone_number,
+            })
+          : { error: true };
+
+        if (error) {
+          return NextResponse.redirect(new URL(`/complete-profile?${new URLSearchParams({ redirect_to: next })}`, origin));
+        }
       }
     }
-
-    return NextResponse.redirect(new URL(next, origin));
   }
 
-  if (redirectTo) {
-    return NextResponse.redirect(`${origin}${redirectTo}`);
-  }
-
-  // URL to redirect to after sign up process completes
-  return NextResponse.redirect(`${origin}/protected`);
+  return NextResponse.redirect(new URL(next, origin));
 }
