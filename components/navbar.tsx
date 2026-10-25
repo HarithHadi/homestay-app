@@ -8,7 +8,6 @@ import MobileNav from "@/components/mobile-nav";
 const navLinks = [
   { label: "Rooms", href: "/rooms" },
   { label: "My Bookings", href: "/bookings" },
-  { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
 

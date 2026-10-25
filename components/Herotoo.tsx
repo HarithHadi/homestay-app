@@ -42,7 +42,7 @@ export default function Herotoo() {
                         Swit60 Homestay
                     </h1>
                     <p className="text-lg max-w-md font-bold">
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Fugiat libero excepturi numquam.
+                        Swim, snack, scroll, repeat. 🌴 Our Sungai Besar homestay has free Wi-Fi, an outdoor pool, and tasty eats nearby. Your easiest holiday yet.
                     </p>
                     <Button
                         className="px-6 py-3 text-lg transition-all duration-300 hover:scale-105 bg-orange-500 hover:bg-orange-400"

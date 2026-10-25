@@ -4,6 +4,10 @@ export const roomImages: Record<number, string[]> = {
     "/HomestayPic/Home1/Home1In1.jpeg",
     "/HomestayPic/Home1/Home1In2.jpeg",
     "/HomestayPic/Home1/Home1In3.jpeg",
+    "/HomestayPic/Home1/Home1In4.jpeg",
+    "/HomestayPic/Home1/Home1In5.jpeg",
+    "/HomestayPic/Home1/Home1In6.jpeg",
+    "/HomestayPic/Home1/Home1In7.jpeg",
 
   ],
   2: [

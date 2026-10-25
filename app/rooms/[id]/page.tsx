@@ -58,7 +58,7 @@ export default async function RoomPage(props: any) {
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Capacity
                 </p>
-                <p className="text-2xl font-bold mt-1">{room.room_capacity} people</p>
+                <p className="text-2xl font-bold mt-1">{room.room_capacity} Adults</p>
               </div>
               <div className="p-4 bg-brand-green/70 border-2 border-dashed rounded-lg">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -76,6 +76,7 @@ export default async function RoomPage(props: any) {
                 <li className="text-base">Wifi: {room.facilities.wifi ? "✅" : "❌"}</li>
                 <li className="text-base">CarPark: {room.facilities.parking ? "✅" : "❌"}</li>
                 <li className="text-base">BBQ Area: {room.facilities.bbq_area ? "✅" : "❌"}</li>
+                <li className="text-base">Swimming Pool: {room.facilities.Swimming ? "✅" : "❌"}</li>
               </ul>
             </div>
 
