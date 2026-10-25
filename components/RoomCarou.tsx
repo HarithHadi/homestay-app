@@ -46,7 +46,7 @@ export default function RoomCarou({ roomId }: { roomId: number }) {
                 {/* Wrap image in Dialog for Full Size view */}
                 <Dialog>
                   <DialogTrigger asChild>
-                    <div className="relative w-full h-72 rounded-lg overflow-hidden shadow-md cursor-zoom-in group">
+                    <div className="relative w-full h-60 sm:h-72 rounded-lg overflow-hidden shadow-md cursor-zoom-in group">
                       <Image
                         src={src}
                         alt={`Room image ${idx + 1}`}
@@ -82,7 +82,7 @@ export default function RoomCarou({ roomId }: { roomId: number }) {
       </div>
 
       
-      <div className="mt-4">
+      <div className="mt-4 hidden sm:block">
         <Carousel className="w-full">
           <CarouselContent className="-ml-2">
             {images.map((src, idx) => (

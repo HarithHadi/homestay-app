@@ -6,7 +6,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Search } from "lucide-react";
+import { AlertCircle, Bath, BedDouble, BedSingle, Search, Users } from "lucide-react";
+import { AMENITIES, Fact } from "@/components/RoomFacts";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import { roomImages } from "@/lib/roomImage";
@@ -18,6 +19,10 @@ interface Room {
   room_name: string;
   room_capacity: string;
   room_type: string;
+  single_bed: number | null;
+  queen_beds: number | null;
+  toilets: number | null;
+  facilities: Record<string, boolean> | null;
 }
 
 const RoomsPageClient = () => {
@@ -230,15 +235,37 @@ const RoomsPageClient = () => {
                   </div>
 
                   <div className="flex flex-col flex-1 p-4">
-                    <CardHeader className="p-0 pb-2">
+                    <CardHeader className="p-0 pb-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {room.room_type}
+                      </p>
                       <CardTitle className="text-lg font-semibold">
                         {room.room_name}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-0 space-y-1 text-sm">
-                      <p><strong>Type:</strong> {room.room_type}</p>
-                      <p><strong>Capacity:</strong> {room.room_capacity}</p>
-                      <p><strong>Price:</strong> RM{room.room_price.toFixed(2)}</p>
+                    <CardContent className="p-0 flex flex-col flex-1 gap-3 text-sm text-brand-black">
+                      <ul className="flex flex-wrap gap-1.5">
+                        <Fact icon={Users}>{room.room_capacity} Adults</Fact>
+                        {(room.queen_beds ?? 0) > 0 && <Fact icon={BedDouble}>{room.queen_beds} Queen</Fact>}
+                        {(room.single_bed ?? 0) > 0 && <Fact icon={BedSingle}>{room.single_bed} Single</Fact>}
+                        {(room.toilets ?? 0) > 0 && <Fact icon={Bath}>{room.toilets} Toilets</Fact>}
+                      </ul>
+                      {/* icons only here to keep the card compact; title gives the label on hover */}
+                      <ul className="flex gap-3 text-muted-foreground">
+                        {AMENITIES.filter((a) => room.facilities?.[a.key]).map((a) => (
+                          <li key={a.key} title={a.label}>
+                            <a.icon className="h-5 w-5" aria-label={a.label} />
+                          </li>
+                        ))}
+                      </ul>
+                      {/* mt-auto pins the price to the bottom so cards in a row line up */}
+                      <div className="mt-auto pt-3 border-t border-brand-black/15 flex items-baseline justify-between">
+                        <p>
+                          <span className="text-xl font-bold">RM {room.room_price.toFixed(2)}</span>
+                          <span className="text-muted-foreground"> / night</span>
+                        </p>
+                        <span className="font-semibold text-brand-orange">View →</span>
+                      </div>
                     </CardContent>
                   </div>
                 </Card>
