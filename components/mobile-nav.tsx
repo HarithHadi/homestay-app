@@ -4,14 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
-const navLinks = [
-  { label: "Rooms", href: "/rooms" },
-  { label: "My Bookings", href: "/bookings" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-];
-
-export default function MobileNav({ authSlot }: { authSlot: React.ReactNode }) {
+export default function MobileNav({
+  links,
+  authSlot,
+}: {
+  links: { label: string; href: string }[];
+  authSlot: React.ReactNode;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -28,7 +27,7 @@ export default function MobileNav({ authSlot }: { authSlot: React.ReactNode }) {
       {/* Dropdown panel */}
       {isOpen && (
         <div className="fixed top-16 left-0 right-0 bg-[#FDF4AF] shadow-md border-t border-black/10 flex flex-col items-stretch py-4 z-50">
-          {navLinks.map((link) => (
+          {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}

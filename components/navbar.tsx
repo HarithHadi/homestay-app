@@ -4,6 +4,7 @@ import { EnvVarWarning } from "@/components/env-var-warning";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { displayFont } from "@/lib/font";
 import MobileNav from "@/components/mobile-nav";
+import { isAdmin } from "@/utils/supabase/admin";
 
 const navLinks = [
   { label: "Rooms", href: "/rooms" },
@@ -11,8 +12,12 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-export default function Navbar() {
+export default async function Navbar() {
   const authSlot = !hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />;
+  // convenience link only; /admin/bookings does its own isAdmin() check
+  const links = hasEnvVars && (await isAdmin())
+    ? [...navLinks, { label: "Admin", href: "/admin/bookings" }]
+    : navLinks;
 
   return (
     <nav className="print:hidden w-full flex flex-col items-center border-b-2 border-brand-black bg-[#FDF4AF] z-50 relative">
@@ -27,7 +32,7 @@ export default function Navbar() {
 
         {/* Desktop nav links */}
         <div className="hidden md:flex items-center gap-8 text-sm font-bold text-foreground/70">
-          {navLinks.map((link) => (
+          {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -44,7 +49,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile: hamburger + dropdown */}
-        <MobileNav authSlot={authSlot} />
+        <MobileNav links={links} authSlot={authSlot} />
       </div>
     </nav>
   );
