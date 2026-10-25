@@ -1,38 +1,167 @@
-'use client'
+import { cookies } from "next/headers";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createAdminClient } from "@/utils/supabase/admin";
+import { createClient } from "@/utils/supabase/server";
+import { createBooking, saveReceipt } from "@/app/actions";
+import { SubmitButton } from "@/components/submit-button";
+import { buttonVariants } from "@/components/ui/button";
+import { BOOKING_COOKIE, parseTokens } from "@/lib/bookingCookie";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { displayFont } from "@/lib/font";
 
-import { Elements } from "@stripe/react-stripe-js"
-import { loadStripe } from "@stripe/stripe-js"
-import convertToSubcurrency from "@/lib/converttoSubcurrency";
-import CheckoutPage from "@/components/CheckoutPage";
+type Params = { 
+  room_id?: string;
+  check_in?: string;
+  check_out?: string; 
+  booking?: string; 
+  error?: string 
+};
 
-if(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined){
-    throw new Error("NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not defined");
+export default async function PaymentPage({ searchParams }: { searchParams: Promise<Params> }) {
+
+  const { room_id, check_in, check_out, booking: requested, error } = await searchParams;
+  const tokens = parseTokens((await cookies()).get(BOOKING_COOKIE)?.value);
+  
+  // ?booking= picks one of this browser's bookings; default is the newest.
+  const token = requested && tokens.includes(requested) ? requested : tokens[0];
+  const db = createAdminClient();
+
+  // The cookie token is the guest's only credential.
+  const { data: booking } = token
+    ? await db
+        .from("booking")
+        .select("room_id, in_date, out_date, total_amount, receipt_url, BookingStatus")
+        .eq("access_token", token)
+        .maybeSingle()
+    : { data: null };
+
+  // A room_id means "start a new booking", so it wins over showing an existing one.
+  const open = !room_id && booking && booking.BookingStatus !== "CANCELLED" ? booking : null;
+
+  if (!open && !room_id) redirect(tokens.length ? "/bookings" : "/rooms");
+
+  // Starting a new booking needs an account; createBooking re-checks this.
+  const { data: { user } } = room_id ? await (await createClient()).auth.getUser() : { data: { user: null } };
+  if (room_id && !user) {
+    const here = `/Payment?${new URLSearchParams({ room_id, check_in: check_in ?? "", check_out: check_out ?? "" })}`;
+    redirect(`/sign-in?${new URLSearchParams({ redirect_to: here })}`);
+  }
+
+  return (
+    <main className="min-h-screen">
+      <div className="max-w-xl mx-auto px-6 py-12">
+        <Card>
+          <CardHeader>
+            <CardTitle className={`${displayFont.className} text-4xl text-brand-black squiggle text-center`}>
+              {open ? "Complete your payment" : "Your details"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {error && <p className="text-sm text-red-600">{error}</p>}
+
+            {open ? (
+              <PaymentStep booking={open} token={token!} />
+            ) : (
+              <form action={createBooking} className="space-y-4">
+                <input type="hidden" name="room_id" value={room_id} />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="check_in">Check-in</Label>
+                    <Input id="check_in" name="check_in" type="date" defaultValue={check_in} required className="text-black" />
+                  </div>
+                  <div>
+                    <Label htmlFor="check_out">Check-out</Label>
+                    <Input id="check_out" name="check_out" type="date" defaultValue={check_out} required className="text-black" />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="guest_name">Full name</Label>
+                  <Input id="guest_name" name="guest_name" required className="text-black" />
+                </div>
+                <div>
+                  <Label htmlFor="guest_phone">Phone number</Label>
+                  <Input id="guest_phone" name="guest_phone" type="tel" required className="text-black" />
+                </div>
+                <div>
+                  <Label htmlFor="guest_email">Email</Label>
+                  <Input id="guest_email" name="guest_email" type="email" defaultValue={user?.email} required className="text-black" />
+                </div>
+                <SubmitButton pendingText="Reserving..." className="w-full bg-orange-500 hover:bg-orange-600 py-6">
+                  Continue to payment
+                </SubmitButton>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </main>
+  );
 }
 
+function PaymentStep({
+  booking,
+  token,
+}: {
+  token: string;
+  booking: { in_date: string; out_date: string; total_amount: number; receipt_url: string | null; BookingStatus: string };
+}) {
+  const summary = (
+    <p className="text-center">
+      {booking.in_date} to {booking.out_date} &middot;{" "}
+      <strong>RM {Number(booking.total_amount).toFixed(2)}</strong>
+    </p>
+  );
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+  if (booking.BookingStatus === "CONFIRMED") {
+    return (
+      <>
+        {summary}
+        <p className="text-center text-green-700 font-semibold">Payment verified. Your booking is confirmed!</p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link href={`/bookings/${token}`} className={`${buttonVariants()} flex-1 py-6`}>
+            View receipt
+          </Link>
+          <Link href="/bookings" className={`${buttonVariants({ variant: "secondary" })} flex-1 py-6`}>
+            My bookings
+          </Link>
+        </div>
+      </>
+    );
+  }
 
-export default function PaymentPage(){
-    const amount = 49.99;
+  if (booking.receipt_url) {
+    return (
+      <>
+        {summary}
+        <p className="text-center">
+          Receipt received. The owner is verifying your payment, your booking stays <strong>pending</strong> until then.
+        </p>
+        <Link href="/bookings" className={`${buttonVariants({ variant: "secondary" })} w-full py-6`}>
+          My bookings
+        </Link>
+      </>
+    );
+  }
 
-
-    return(
-        <>        
-        <main className="bg-indigo-400 w-full">
-            <Elements 
-                stripe={stripePromise}
-                options={{
-                    mode: "payment",
-                    amount: convertToSubcurrency(amount),
-                    currency: "myr"
-                    }}
-            >
-                <CheckoutPage amount={amount}/>
-
-
-            </Elements>
-        </main>
-        
-        </>
-    )
+  return (
+    <>
+      {summary}
+      <div className="flex justify-center bg-white border-2 border-dashed rounded-md p-4">
+        <img src="/payment-qr.jpeg" alt="Scan to pay" className="w-64 h-64 object-contain" />
+      </div>
+      <p className="text-sm text-center text-muted-foreground">
+        Scan with your banking app and transfer the exact amount, then upload your receipt below.
+      </p>
+      <form action={saveReceipt} className="space-y-3">
+        <input type="hidden" name="token" value={token} />
+        <Input name="receipt" type="file" accept="image/*,application/pdf" required className="text-black bg-white" />
+        <SubmitButton pendingText="Uploading..." className="w-full bg-orange-500 hover:bg-orange-600 py-6">
+          I&apos;ve paid, send receipt
+        </SubmitButton>
+      </form>
+    </>
+  );
 }

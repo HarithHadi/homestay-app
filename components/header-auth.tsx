@@ -18,8 +18,8 @@ export default async function AuthButton() {
 
   if(user){
     const { data } = await supabase
-    .from("Profiles")
-    .select("first_name, surname") // select only what you care about
+    .from("profiles")
+    .select("first_name, surname") 
     .eq("id", user.id)
     .single();
 
@@ -31,7 +31,7 @@ export default async function AuthButton() {
   if (!hasEnvVars) {
     return (
       <>
-        <div className="flex gap-4 items-center ">
+        <div className="flex gap-4 items-center">
           <div>
             <Badge
               variant={"default"}
@@ -65,10 +65,10 @@ export default async function AuthButton() {
     );
   }
   return user ? (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4 bg">
       Hey, {profile?.first_name} {profile?.surname}!
       <form action={signOutAction}>
-        <Button type="submit" variant={"outline"}>
+        <Button type="submit" variant={"outline"} className="bg-orange-500 font-bold text-white border-none  hover:bg-orange-400 hover:text-white">
           Sign out
         </Button>
       </form>

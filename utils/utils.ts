@@ -14,3 +14,19 @@ export function encodedRedirect(
 ) {
   return redirect(`${path}?${type}=${encodeURIComponent(message)}`);
 }
+
+/** Where to send a user after login. `?redirect_to=` is user-controlled, so only same-site paths pass. */
+export function safeRedirect(path: string | null | undefined): string {
+  if(!path) return "/";
+
+  
+  const isSafe = path.startsWith('/') && !path.startsWith('//') && !path.startsWith("/\\");
+
+  if(isSafe){
+    return path;
+  }
+  else {
+    return "/";
+  }
+  
+}

@@ -1,24 +1,28 @@
-// /rooms/rooms-client.tsx
-"use client";
+"use client"
 
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
-import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
-import { checkAvailability } from "../actions";
-import { useSearchParams } from "next/navigation";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { AlertCircle, Bath, BedDouble, BedSingle, Search, Users } from "lucide-react";
+import { AMENITIES, Fact } from "@/components/RoomFacts";
+import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
+import { roomImages } from "@/lib/roomImage";
 
 interface Room {
-  id: number;
+  room_id: number;
   created_at: string;
   room_price: number;
   room_name: string;
   room_capacity: string;
   room_type: string;
+  single_bed: number | null;
+  queen_beds: number | null;
+  toilets: number | null;
+  facilities: Record<string, boolean> | null;
 }
 
 const RoomsPageClient = () => {
@@ -26,79 +30,104 @@ const RoomsPageClient = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Search bar state
+  const [checkIn, setCheckIn] = useState<string>("");
+  const [checkOut, setCheckOut] = useState<string>("");
+  const [filteredRooms, setFilteredRooms] = useState<Room[] | null>(null);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+
   const supabase = createClient();
-  const searchParams = useSearchParams();
 
-  const occupied = (searchParams.get("occupied")?.split(",") || []).map(Number);
-  const check_in = searchParams.get("check_in")?.toString();
-  const check_out = searchParams.get("check_out")?.toString();
-
+  {/* Fetch rooms from supabase */}
   useEffect(() => {
     const fetchRooms = async () => {
-      try {
-        const { data, error: fetchError } = await supabase
-          .from("Rooms")
-          .select("*")
-          .order('id', {ascending: true});
+      const { data, error: fetchError } = await supabase
+        .from("rooms")
+        .select("*")
+        .order("room_id", { ascending: true });
 
-        if (fetchError) {
-          setError(fetchError.message);
-          setLoading(false);
-          return;
-        }
-
-        if (data) {
-          if (occupied.length > 0) {
-            setRooms(data.filter((room) => !occupied.includes(room.id)));
-          } else {
-            setRooms(data);
-          }
-        } else {
-          setRooms([]);
-        }
-        setLoading(false);
-      } catch (err: any) {
-        setError(err.message || "An error occurred while fetching rooms.");
-        setLoading(false);
+      if (fetchError) {
+        setError(fetchError.message);
+      } else {
+        setRooms(data || []);
       }
+      setLoading(false);
     };
 
     fetchRooms();
-  }, [occupied, supabase]);
+  }, [supabase]);
 
-  const BASE_IMAGE_URL = "/HomestayPic";
+  {/* Search rooms by availability for the given date range */}
+  const handleSearch = async () => {
+    setSearchError(null);
 
-  const roomsImg = rooms.map((room) => {
-    let imageUrl = null;
-    let isVertical = false; 
-
-    const cleanName = room.room_name.replace(/\s/g, '');
-
-    if([1, 2].includes(room.id)){
-      imageUrl = `/HomestayPic/${cleanName}/${cleanName}Out.jpeg`;
-    }
-    else if([3, 4, 6].includes(room.id)){
-      imageUrl = `/HomestayPic/IndividualHome/IndiOutHome1.jpeg`;
-      isVertical = true;
+    if (!checkIn || !checkOut) {
+      setSearchError("Please select both check-in and check-out dates.");
+      return;
     }
 
-    return{
-      ...room, image_url : imageUrl, isVertical
-    };
+    if (new Date(checkOut) <= new Date(checkIn)) {
+      setSearchError("Check-out date must be after check-in date.");
+      return;
+    }
 
-  })
+    setSearching(true);
+
+    // Find bookings that overlap the requested date range.
+    // Overlap condition: existing.in_date < requested.out_date AND existing.out_date > requested.in_date
+    const { data: overlappingBookings, error: bookingError } = await supabase
+      .from("booking")
+      .select("room_id, BookingStatus")
+      .lt("in_date", checkOut)
+      .gt("out_date", checkIn)
+      .neq("BookingStatus", "CANCELLED"); // ignore cancelled bookings when checking availability
+
+    if (bookingError) {
+      setSearchError(bookingError.message);
+      setSearching(false);
+      return;
+    }
+
+    const bookedRoomIds = new Set(
+      (overlappingBookings || []).map((b: { room_id: number }) => b.room_id)
+    );
+
+    const available = rooms.filter((room) => !bookedRoomIds.has(room.room_id));
+    setFilteredRooms(available);
+    setSearching(false);
+  };
+
+  const handleClear = () => {
+    setCheckIn("");
+    setCheckOut("");
+    setFilteredRooms(null);
+    setSearchError(null);
+  };
+
+  {/* Images */}
+  const attachImages = (roomList: Room[]) =>
+  roomList.map((room) => {
+    const images = roomImages[room.room_id];
+    const imageUrl = images?.[0] ?? null; // first image = "Out" / cover shot
+    const isVertical = room.room_id !== 1 && room.room_id !== 2; // Home1/Home2 are landscape, IndividualHome shots are vertical
+
+    return { ...room, image_url: imageUrl, isVertical };
+  });
+
+  const roomsWithImages = attachImages(filteredRooms ?? rooms);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Loading rooms data...</p>
+      <div className="min-h-screen  flex items-center justify-center">
+        <p className="text-foreground">Loading rooms...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="min-h-screen flex items-center justify-center">
         <Alert variant="destructive" className="max-w-lg">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
@@ -108,101 +137,144 @@ const RoomsPageClient = () => {
     );
   }
 
+
+
   return (
-    <>
-      <div className="container border rounded-xl shadow-md p-4">
-        <form>
-          <div className="flex flex-col sm:flex-row gap-y-3 sm:gap-x-3">
-            <div className="flex-1">
-              <label className="text-sm font-medium">Check in</label>
-              <Input
-                name="check_in"
-                required
-                type="date"
-                className="w-full"
-                defaultValue={check_in || ""}
-              />
+
+    
+    <div className="min-h-screen">
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        <h1 className="text-3xl font-bold mb-8 text-center text-foreground">
+          All Rooms
+        </h1>
+
+        {/* Search bar */}
+        <Card className="mb-8 bg-brand-yellow">
+          <CardContent className="p-4">
+            <div className="flex flex-col sm:flex-row gap-4 sm:items-end">
+              <div className="flex-1">
+                <Label htmlFor="check-in" className="mb-1 block font-semibold">
+                  Check-In Date
+                </Label>
+                <Input
+                  id="check-in"
+                  type="date"
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  className="text-black"
+                />
+              </div>
+              <div className="flex-1">
+                <Label htmlFor="check-out" className="mb-1 block font-semibold">
+                  Check-Out Date
+                </Label>
+                <Input
+                  id="check-out"
+                  type="date"
+                  value={checkOut}
+                  min={checkIn || undefined}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                  className="text-black"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleSearch} disabled={searching} className="bg-orange-500">
+                  <Search className="h-4 w-4 mr-2" />
+                  {searching ? "Searching..." : "Search"}
+                </Button>
+                {filteredRooms !== null && (
+                  <Button variant="outline" onClick={handleClear}>
+                    Clear
+                  </Button>
+                )}
+              </div>
             </div>
 
-            <div className="flex-1">
-              <label className="text-sm font-medium">Check Out</label>
-              <Input
-                name="check_out"
-                required
-                type="date"
-                className="w-full"
-                defaultValue={check_out || ""}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col justify-end sm:flex-1">
-            <label className="opacity-0">Search 🔍</label>
-            <SubmitButton
-              type="submit"
-              formAction={checkAvailability}
-              className="bg-green-500 hover:bg-green-700"
-            >
-              Search 🔍
-            </SubmitButton>
-          </div>
-        </form>
-      </div>
+            {searchError && (
+              <p className="text-sm text-destructive mt-3">{searchError}</p>
+            )}
 
-      <div className="container mx-auto p-4">
-        {occupied.length > 0 ? (
-          <h1 className="text-3xl font-bold mb-6 text-center">
-            Available Rooms
-          </h1>
+            {filteredRooms !== null && !searchError && (
+              <p className="text-sm text-muted-foreground mt-3">
+                Showing {filteredRooms.length} room
+                {filteredRooms.length === 1 ? "" : "s"} available from{" "}
+                {checkIn} to {checkOut}.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {roomsWithImages.length === 0 ? (
+          <p className="text-center text-muted-foreground">
+            {filteredRooms !== null
+              ? "No rooms available for the selected dates."
+              : "No rooms found."}
+          </p>
         ) : (
-          <h1 className="text-3xl font-bold mb-6 text-center">All Rooms</h1>
-        )}
-        <div className="space-y-6">
-          {roomsImg.map((room) => (
-            <Link  key={room.id} href={`/rooms/${room.id}`} className='block'>
-                <Card
-                key={room.id}
-                className="bg-background text-foreground flex flex-col sm:flex-row overflow-hidden transform transition duration-300 ease-in-out hover:shadow-lg"
-                >
-                <div className="sm:w-2/5 bg-gray-100 flex items-center justify-center overflow-hidden">
-                    <img
-                    src= {room.image_url || ""}
-                    alt="Room"
-                    className={`${ 
-                    room.isVertical 
-                      ? "w-40 h-full object-scale-down " 
-                      : "w-100 h-full object-cover"       
-                    }`}
-                    />
-                </div>
 
-                <div className="sm:w-3/5 flex flex-col justify-between sm:p-4">
-                    <CardHeader>
-                    <CardTitle className="text-xl font-semibold text-center">
+          // -------------------------------------------Rooms-------------------------------------------
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {roomsWithImages.map((room) => (
+              <Link key={room.room_id} href={`/rooms/${room.room_id}${filteredRooms !== null ? `?check_in=${checkIn}&check_out=${checkOut}` : ""}`} className="block">
+                <Card className="flex flex-col h-full overflow-hidden transition-transform duration-200 hover:-rotate-1 hover:-translate-y-1 bg-[#FDF4AF]">
+                  <div className="w-full h-56 bg-muted flex items-center justify-center overflow-hidden">
+                    {room.image_url ? (
+                      <img
+                        src={room.image_url}
+                        alt={room.room_name}
+                        className={
+                          room.isVertical
+                            ? "w-40 h-full object-scale-down"
+                            : "w-full h-full object-cover"
+                        }
+                        onError={(e) => (e.currentTarget.style.display = "none")}
+                      />
+                    ) : (
+                      <span className="text-muted-foreground text-sm">No Image</span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col flex-1 p-4">
+                    <CardHeader className="p-0 pb-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {room.room_type}
+                      </p>
+                      <CardTitle className="text-lg font-semibold">
                         {room.room_name}
-                    </CardTitle>
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                    <p>
-                        <strong>House Type:</strong> {room.room_type}
-                    </p>
-                    <p>
-                        <strong>Capacity:</strong> {room.room_capacity}
-                    </p>
-                    <p>
-                        <strong>Price:</strong> RM{room.room_price.toFixed(2)}
-                    </p>
+                    <CardContent className="p-0 flex flex-col flex-1 gap-3 text-sm text-brand-black">
+                      <ul className="flex flex-wrap gap-1.5">
+                        <Fact icon={Users}>{room.room_capacity} Adults</Fact>
+                        {(room.queen_beds ?? 0) > 0 && <Fact icon={BedDouble}>{room.queen_beds} Queen</Fact>}
+                        {(room.single_bed ?? 0) > 0 && <Fact icon={BedSingle}>{room.single_bed} Single</Fact>}
+                        {(room.toilets ?? 0) > 0 && <Fact icon={Bath}>{room.toilets} Toilets</Fact>}
+                      </ul>
+                      {/* icons only here to keep the card compact; title gives the label on hover */}
+                      <ul className="flex gap-3 text-muted-foreground">
+                        {AMENITIES.filter((a) => room.facilities?.[a.key]).map((a) => (
+                          <li key={a.key} title={a.label}>
+                            <a.icon className="h-5 w-5" aria-label={a.label} />
+                          </li>
+                        ))}
+                      </ul>
+                      {/* mt-auto pins the price to the bottom so cards in a row line up */}
+                      <div className="mt-auto pt-3 border-t border-brand-black/15 flex items-baseline justify-between">
+                        <p>
+                          <span className="text-xl font-bold">RM {room.room_price.toFixed(2)}</span>
+                          <span className="text-muted-foreground"> / night</span>
+                        </p>
+                        <span className="font-semibold text-brand-orange">View →</span>
+                      </div>
                     </CardContent>
-                </div>
+                  </div>
                 </Card>
-            </Link>
-          ))}
-        </div>
-
-        {rooms.length === 0 && (
-          <div className="text-center text-gray-500 mt-4">No rooms found.</div>
+              </Link>
+            ))}
+          </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

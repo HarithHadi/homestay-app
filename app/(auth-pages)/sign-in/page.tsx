@@ -8,19 +8,16 @@ import OtpButton from "@/components/ui/OtpButton";
 
 import Link from "next/link";
 
-export default async function Login(props: { searchParams: Promise<Message> }) {
+export default async function Login(props: { searchParams: Promise<Message & { redirect_to?: string }> }) {
   const searchParams = await props.searchParams;
+  const redirectTo = searchParams.redirect_to ?? "/";
   return (
     <>
-      <form className="flex-1 flex flex-col min-w-64">
+      <form className="flex flex-col min-w-64">
         <h1 className="text-2xl font-medium">Sign in</h1>
-        <p className="text-sm text-foreground">
-          Don't have an account?{" "}
-          <Link className="text-foreground font-medium underline" href="/sign-up">
-            Sign up
-          </Link>
-        </p>
-        <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
+        
+        <div className="flex flex-col [&>input]:mb-3 mt-8">
+          <input type="hidden" name="redirect_to" value={redirectTo} />
           <Label htmlFor="email">Email</Label>
           <Input name="email" placeholder="you@example.com" required />
           <div className="flex justify-between items-center">
@@ -43,10 +40,17 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
           </SubmitButton>
           <FormMessage message={searchParams} />
         </div>
+        
       </form>
+      <p className="text-sm text-foreground">
+          Don't have an account?{" "}
+          <Link className="text-foreground font-medium underline" href="/sign-up">
+            Sign up
+          </Link>
+      </p>
       <div className="flex flex-col min-w-64 max-w-64 mx-auto">
             {/* 🔹 Divider */}
-            <div className="flex items-center gap-2 my-4">
+            <div className="flex items-center mb-4">
               <hr className="flex-1 border-border" />
               <span className="text-xs text-muted-foreground">OR</span>
               <hr className="flex-1 border-border" />
@@ -54,7 +58,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
 
             {/* 🔹 Google Sign Up */}
             <div className="pb-3">
-                <GoogleAuthButton></GoogleAuthButton>
+                <GoogleAuthButton next={redirectTo} />
             </div>
             
             {/* <OtpButton></OtpButton> */}

@@ -5,8 +5,8 @@
   @layer base {
     :root {
       --radius: 0.625rem;
-      --background: oklch(1 0 0);
-      --foreground: (0.36 0.0154 259.81);
+      --background: oklch(99.254% 0.00215 200.011);
+      --foreground: oklch(0.36 0.0154 259.81);
       --card: oklch(1 0 0);
       --card-foreground: oklch(0.13 0.028 261.692);
       --popover: oklch(1 0 0);
@@ -20,8 +20,8 @@
       --accent: oklch(0.967 0.003 264.542);
       --accent-foreground: oklch(0.21 0.034 264.665);
       --destructive: oklch(0.577 0.245 27.325);
-      --border: oklch(0.928 0.006 264.531);
-      --input: oklch(0.928 0.006 264.531);
+      --border: #323130; /* ink */
+      --input: #323130;
       --ring: oklch(0.707 0.022 261.325);
       --chart-1: oklch(0.646 0.222 41.116);
       --chart-2: oklch(0.6 0.118 184.704);
@@ -36,11 +36,16 @@
       --sidebar-accent-foreground: oklch(0.21 0.034 264.665);
       --sidebar-border: oklch(0.928 0.006 264.531);
       --sidebar-ring: oklch(0.707 0.022 261.325);
+        /* Custom brand colors for Swit60 */
+      --brand-yellow: #FDF4AF;
+      --brand-orange: oklch(0.75 0.15 55);       /* ~orange-500 */
+      --brand-orange-hover: oklch(0.8 0.14 55);  /* ~orange-400 */
+      --brand-navy: oklch(0.2 0.03 260);         /* your dark Book Now button color */
     }
     
     .dark {
       --background: oklch(0.27 0.0188 258.37);
-      --foreground: oklch(0.36 0.0154 259.81)
+      --foreground: oklch(0.36 0.0154 259.81);
       --card: oklch(0.21 0.034 264.665);
       --card-foreground: oklch(0.985 0.002 247.839);
       --popover: oklch(0.21 0.034 264.665);
@@ -74,11 +79,47 @@
     
   }
 
+  @theme inline {
+    --color-brand-yellow: var(--brand-yellow);
+    --color-brand-orange: var(--brand-orange);
+    --color-brand-orange-hover: var(--brand-orange-hover);
+    --color-brand-navy: var(--brand-navy);
+    --color-brand-black: #323130;
+    --color-brand-green: #CFE8C4;
+    --color-brand-green-dark: #4C8A3C;
+  }
+
   @layer base {
     * {
       @apply border-border;
     }
     body {
       @apply bg-background text-foreground;
+      /* doodle notebook paper: faint dot grid */
+      background-image: radial-gradient(rgb(50 49 48 / 0.18) 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+    }
+    /* hand-drawn wavy underline for headings: <h1 className="squiggle"> */
+    .squiggle {
+      text-decoration: underline wavy var(--brand-orange);
+      text-decoration-thickness: 3px;
+      text-underline-offset: 8px;
+    }
+    /* iOS Safari draws date inputs natively: ignores our height and centres the value */
+    input[type="date"] {
+      -webkit-appearance: none;
+      appearance: none;
+      min-height: 2.5rem;
+    }
+    input[type="date"]::-webkit-date-and-time-value {
+      text-align: left;
     }
   }
+
+  @layer utilities {
+    .test {
+      @apply border border-red-500;
+    }
+  }
+  
+
